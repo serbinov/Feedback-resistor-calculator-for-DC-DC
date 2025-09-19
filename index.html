@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC/DC Feedback Resistor Calculator</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Online DC/DC converter feedback resistor calculator. Calculate optimal R1 and R2 values for voltage divider networks in switching power supplies, buck converters, boost converters, and step-down regulators.">
+    <meta name="keywords" content="feedback resistor calculator, DC/DC converter calculator, voltage divider calculator, resistor divider calculator, switching regulator calculator, buck converter resistor, boost converter resistor, step-down converter calculator, power supply feedback network, voltage reference calculator, R1 R2 calculator, feedback network calculator, switching power supply calculator, voltage regulator calculator, DC converter resistor values, power electronics calculator, resistor ratio calculator, voltage divider network, feedback loop calculator, switching converter design">
+    <meta name="author" content="Oleg Serbinov">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="DC/DC Feedback Resistor Calculator">
+    <meta property="og:description" content="Calculate optimal feedback resistor values for DC/DC converters. Free online tool for voltage divider networks in switching power supplies.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Feedback Resistor Calculator">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='40' width='60' height='20' fill='none' stroke='black' stroke-width='5'/><rect x='15' y='35' width='10' height='30' fill='black'/><rect x='75' y='35' width='10' height='30' fill='black'/></svg>">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "DC/DC Feedback Resistor Calculator",
+        "description": "Online calculator for determining optimal feedback resistor values in DC/DC converter circuits",
+        "url": "https://serbinov.github.io/",
+        "author": {
+            "@type": "Person",
+            "name": "Oleg Serbinov",
+            "url": "https://serbinov.github.io/"
+        },
+        "applicationCategory": "Engineering Calculator",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "keywords": "feedback resistor calculator, DC/DC converter, voltage divider, power supply design, switching regulator"
+    }
+    </script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .input-row {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .input-row label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        .input-row input, .input-row select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .input-group .input-row {
+            flex: 1;
+        }
+        button {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+        }
+        .tab.active {
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .standard-value {
+            color: #28a745;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        .range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+        .range-inputs .input-with-unit {
+            flex: 1;
+            min-width: 80px;
+        }
+        .range-inputs label {
+            font-size: 12px;
+            color: #666;
+        }
+        .range-separator {
+            color: #666;
+            font-size: 14px;
+            margin: 0 5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .range-row {
+            flex-wrap: nowrap;
+        }
+        
+        .unit {
+            font-size: 0.9em;
+            color: #666;
+            margin-left: 5px;
+        }
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .input-with-unit input {
+            flex: 1;
+        }
+        
+        .circuit-image {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .circuit-image img {
+            max-width: 60%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .description {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-left: 4px solid #3498db;
+        }
+        
+        .developer-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .developer-info a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        
+        .developer-info a:hover {
+            text-decoration: underline;
+        }
+        
+        .developer-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 479px) {
+            body {
+                padding: 5px;
+                font-size: 13px;
+            }
+            
+            h1 {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            
+            .section {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .description {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            .tab {
+                font-size: 13px;
+                padding: 6px 4px;
+            }
+            
+            .input-row {
+                margin-bottom: 10px;
+            }
+            
+            button {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .range-inputs {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+            
+            .range-inputs .input-with-unit {
+                width: 100%;
+            }
+            
+            .range-separator {
+                display: none;
+            }
+            
+            .range-row {
+                flex-wrap: wrap;
+            }
+            
+            .developer-info {
+                font-size: 12px;
+                padding: 15px 5px;
+                margin-top: 20px;
+            }
+            
+            .circuit-image img {
+                max-width: 90%;
+            }
+        }
+        
+        @media (min-width: 480px) {
+            .input-row {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .input-row label {
+                width: 70%;
+                margin-bottom: 0;
+            }
+            
+            .range-row label {
+                width: 40%;
+            }
+            
+            .input-row input, .input-row select {
+                width: 30%;
+            }
+            
+            .input-with-unit {
+                width: 30%;
+            }
+            
+            .range-inputs {
+                width: 60%;
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .range-separator {
+                display: inline;
+            }
+            
+            .tab {
+                font-size: 16px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                font-size: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .description {
+                font-size: 15px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Feedback Resistor Calculator</h1>
+    
+    <div class="description">
+        <strong>DC/DC Feedback Resistor Calculator</strong><br>
+        This calculator helps you determine the optimal feedback resistor values (R1 and R2) for DC/DC converter circuits. 
+        The feedback network creates a voltage divider that sets the output voltage according to the formula: 
+        <strong>V<sub>out</sub> = V<sub>ref</sub> × (1 + R1/R2)</strong>. 
+        Choose from automatic selection with standard resistor values, specify one known resistor, or manually enter both values.
+    </div>
+    
+    <div class="circuit-image">
+        <img src="image.png" alt="DC/DC Feedback Resistor Circuit Diagram" title="Feedback resistor circuit showing R1 (upper) and R2 (lower) configuration">
+    </div>
+
+    <div class="section">
+        <div class="input-row">
+            <label for="vref">Reference Voltage (Vref/FB)</label>
+            <div class="input-with-unit">
+                <input type="number" id="vref" step="0.001" value="0.6" min="0.1" max="10">
+                <span class="unit">V</span>
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <label for="vout_desired">Output Voltage</label>
+            <div class="input-with-unit">
+                <input type="number" id="vout_desired" step="0.001" value="3.3" min="0.1" max="50">
+                <span class="unit">V</span>
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <label for="resistor_tolerance">Resistor Tolerance</label>
+            <select id="resistor_tolerance">
+                <option value="1">1% (E96 series)</option>
+                <option value="5">5% (E24 series)</option>
+            </select>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('auto')">Auto Selection</div>
+            <div class="tab" onclick="showTab('single')">One Resistor</div>
+            <div class="tab" onclick="showTab('manual')">Manual Input</div>
+        </div>
+
+        <div id="auto-tab" class="tab-content active">
+            <div class="input-row range-row">
+                <label>Resistor Range</label>
+                <div class="range-inputs">
+                    <div class="input-with-unit">
+                        <input type="number" id="min_resistor" step="0.1" value="1" placeholder="Min">
+                        <span class="unit">kΩ</span>
+                    </div>
+                    <span class="range-separator">to</span>
+                    <div class="input-with-unit">
+                        <input type="number" id="max_resistor" step="0.1" value="100" placeholder="Max">
+                        <span class="unit">kΩ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="single-tab" class="tab-content">
+            <div class="input-row">
+                <label for="known_resistor_pos">Known Resistor</label>
+                <select id="known_resistor_pos">
+                    <option value="r1">R1 (upper)</option>
+                    <option value="r2">R2 (lower)</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <label for="known_resistor_value">Resistor Value</label>
+                <div class="input-with-unit">
+                    <input type="number" id="known_resistor_value" step="0.01" value="10">
+                    <span class="unit">kΩ</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="manual-tab" class="tab-content">
+            <div class="input-row">
+                <label for="r1_manual">R1 (upper)</label>
+                <div class="input-with-unit">
+                    <input type="number" id="r1_manual" step="0.01" value="10">
+                    <span class="unit">kΩ</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <label for="r2_manual">R2 (lower)</label>
+                <div class="input-with-unit">
+                    <input type="number" id="r2_manual" step="0.01" value="10">
+                    <span class="unit">kΩ</span>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="calculateResistors()">Calculate</button>
+        
+        <div id="resistor_result" class="result"></div>
+    </div>
+
+    <script>
+        // Стандартные ряды резисторов
+        const E24 = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 
+                    3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+        
+        const E96 = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24, 1.27, 1.30, 
+                    1.33, 1.37, 1.40, 1.43, 1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 
+                    1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 2.15, 2.21, 2.26, 2.32, 
+                    2.37, 2.43, 2.49, 2.55, 2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 
+                    3.16, 3.24, 3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 3.83, 3.92, 4.02, 4.12, 
+                    4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 
+                    5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 
+                    7.50, 7.68, 7.87, 8.06, 8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76];
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`.tab[onclick="showTab('${tabName}')`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function isStandardValue(value, tolerance) {
+            const series = tolerance === 1 ? E96 : E24;
+            const normalized = value / Math.pow(10, Math.floor(Math.log10(value)));
+            return series.some(x => Math.abs(x - normalized) < 0.001);
+        }
+
+        function findClosestResistor(value, tolerance) {
+            const series = tolerance === 1 ? E96 : E24;
+            let decade = Math.pow(10, Math.floor(Math.log10(value)));
+            const normalized = value / decade;
+            
+            let closest = series[0];
+            let minDiff = Math.abs(normalized - closest);
+            
+            for (const r of series) {
+                const diff = Math.abs(normalized - r);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = r;
+                }
+            }
+            
+            if (normalized > 9.5 && closest < 1.5) {
+                decade *= 10;
+            }
+            
+            return closest * decade;
+        }
+
+
+
+        function formatResistorValue(value) {
+            if (value >= 1000000) {
+                return `${(value / 1000000).toFixed(2)} MΩ`;
+            } else if (value >= 1000) {
+                return `${(value / 1000).toFixed(2)} kΩ`;
+            } else {
+                return `${value.toFixed(2)} Ω`;
+            }
+        }
+
+        function calculateResistors() {
+            const vref = parseFloat(document.getElementById('vref').value);
+            const voutDesired = parseFloat(document.getElementById('vout_desired').value);
+            const tolerance = parseInt(document.getElementById('resistor_tolerance').value);
+            const toleranceText = tolerance === 1 ? "1% (E96 series)" : "5% (E24 series)";
+            
+            if (isNaN(vref) || isNaN(voutDesired)) {
+                document.getElementById('resistor_result').innerHTML = 
+                    '<span class="error">Please enter valid voltage values</span>';
+                return;
+            }
+            
+            if (voutDesired <= vref) {
+                document.getElementById('resistor_result').innerHTML = 
+                    '<span class="error">Output voltage must be greater than reference voltage</span>';
+                return;
+            }
+            
+            let r1, r2, r1Standard = true, r2Standard = true;
+            const targetRatio = (voutDesired / vref) - 1;
+            const activeTab = document.querySelector('.tab.active').getAttribute('onclick').replace("showTab('", "").replace("')", "");
+
+            if (activeTab === 'auto') {
+                const minR = parseFloat(document.getElementById('min_resistor').value) * 1000;
+                const maxR = parseFloat(document.getElementById('max_resistor').value) * 1000;
+                
+                if (isNaN(minR) || isNaN(maxR) || minR >= maxR || minR <= 0 || maxR <= 0) {
+                    document.getElementById('resistor_result').innerHTML = 
+                        '<span class="error">Please enter valid resistor range</span>';
+                    return;
+                }
+
+                const series = tolerance === 1 ? E96 : E24;
+                let bestR1 = 0, bestR2 = 0, minError = Infinity;
+                
+                for (let decade = Math.pow(10, Math.floor(Math.log10(minR))); decade <= maxR*10; decade *= 10) {
+                    for (const value of series) {
+                        const r2Candidate = value * decade;
+                        if (r2Candidate < minR || r2Candidate > maxR) continue;
+                        
+                        const r1Candidate = r2Candidate * targetRatio;
+                        if (r1Candidate < minR || r1Candidate > maxR) continue;
+                        
+                        const r1Std = findClosestResistor(r1Candidate, tolerance);
+                        const actualVout = vref * (1 + r1Std / r2Candidate);
+                        const error = Math.abs(actualVout - voutDesired);
+                        
+                        if (error < minError) {
+                            minError = error;
+                            bestR1 = r1Std;
+                            bestR2 = r2Candidate;
+                        }
+                    }
+                }
+                
+                if (bestR1 === 0 || bestR2 === 0) {
+                    document.getElementById('resistor_result').innerHTML = 
+                        '<span class="error">Could not find resistors within specified range</span>';
+                    return;
+                }
+                
+                r1 = bestR1;
+                r2 = bestR2;
+            } 
+            else if (activeTab === 'single') {
+                const knownPos = document.getElementById('known_resistor_pos').value;
+                const knownValue = parseFloat(document.getElementById('known_resistor_value').value) * 1000;
+                
+                if (isNaN(knownValue) || knownValue <= 0) {
+                    document.getElementById('resistor_result').innerHTML = 
+                        '<span class="error">Please enter valid resistor value</span>';
+                    return;
+                }
+                
+                if (knownPos === 'r1') {
+                    r1 = knownValue;
+                    r2 = r1 / targetRatio;
+                } else {
+                    r2 = knownValue;
+                    r1 = r2 * targetRatio;
+                }
+                
+                r1Standard = isStandardValue(r1/1000, tolerance);
+                r2Standard = isStandardValue(r2/1000, tolerance);
+                
+                r1 = findClosestResistor(r1, tolerance);
+                r2 = findClosestResistor(r2, tolerance);
+            } 
+            else {
+                r1 = parseFloat(document.getElementById('r1_manual').value) * 1000;
+                r2 = parseFloat(document.getElementById('r2_manual').value) * 1000;
+                
+                if (isNaN(r1) || isNaN(r2) || r1 <= 0 || r2 <= 0) {
+                    document.getElementById('resistor_result').innerHTML = 
+                        '<span class="error">Please enter valid resistor values</span>';
+                    return;
+                }
+                
+                r1Standard = isStandardValue(r1/1000, tolerance);
+                r2Standard = isStandardValue(r2/1000, tolerance);
+                
+                if (!r1Standard) r1 = findClosestResistor(r1, tolerance);
+                if (!r2Standard) r2 = findClosestResistor(r2, tolerance);
+            }
+            
+            const voutActual = vref * (1 + r1 / r2);
+            const error = Math.abs(voutActual - voutDesired) / voutDesired * 100;
+            
+            let result = `<strong>Results:</strong><br><br>`;
+            result += `<strong>Target V<sub>out</sub>:</strong> ${voutDesired.toFixed(3)} V<br>`;
+            result += `<strong>Actual V<sub>out</sub>:</strong> ${voutActual.toFixed(3)} V (error ${error.toFixed(2)}%)<br><br>`;
+            
+            result += `<strong>R1 (upper):</strong> ${formatResistorValue(r1)}`;
+            if (!r1Standard) result += ` <span class="standard-value">(from ${toleranceText})</span>`;
+            result += `<br>`;
+            
+            result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
+            if (!r2Standard) result += ` <span class="standard-value">(from ${toleranceText})</span>`;
+            
+            document.getElementById('resistor_result').innerHTML = result;
+        }
+    </script>
+    
+    <!-- Hidden SEO content for search engines -->
+    <div style="display: none; visibility: hidden; position: absolute; left: -9999px;">
+        <h2>Feedback Resistor Calculator Variations</h2>
+        <p>DC/DC Feedback Resistor Calculator</p>
+        <p>Switching Regulator Feedback Calculator</p>
+        <p>Buck Converter Resistor Calculator</p>
+        <p>Boost Converter Feedback Network Calculator</p>
+        <p>Step-Down Converter Resistor Calculator</p>
+        <p>Step-Up Converter Feedback Calculator</p>
+        <p>Voltage Divider Resistor Calculator</p>
+        <p>Power Supply Feedback Network Calculator</p>
+        <p>Switching Power Supply Calculator</p>
+        <p>DC Converter Feedback Resistor Tool</p>
+        <p>Voltage Regulator Feedback Calculator</p>
+        <p>SMPS Feedback Resistor Calculator</p>
+        <p>PWM Controller Feedback Network</p>
+        <p>Feedback Loop Resistor Calculator</p>
+        <p>R1 R2 Voltage Divider Calculator</p>
+        <p>Resistor Ratio Calculator for DC/DC</p>
+        <p>Power Electronics Feedback Calculator</p>
+        <p>Linear Regulator Feedback Network</p>
+        <p>Adjustable Voltage Regulator Calculator</p>
+        <p>Output Voltage Setting Calculator</p>
+        
+        <h3>Calculator Features</h3>
+        <p>Calculate feedback resistor values R1 and R2</p>
+        <p>Automatic resistor selection from E24 and E96 series</p>
+        <p>Support for different resistor tolerances</p>
+        <p>Manual resistor value input</p>
+        <p>Single known resistor calculation</p>
+        <p>Voltage divider network design</p>
+        <p>Standard resistor value finder</p>
+        <p>Precision resistor calculator</p>
+    </div>
+    
+    <div class="developer-info">
+        <div class="developer-name">Developed by Oleg Serbinov</div>
+        <div>
+            <a href="https://serbinov.github.io/" target="_blank">Website</a>
+            <a href="https://github.com/serbinov" target="_blank">GitHub</a>
+        </div>
+    </div>
+</body>
+</html>
