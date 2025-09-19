@@ -462,8 +462,8 @@
 
     <div class="description">
         <strong>📊 Resistor Specifications & Package Info</strong><br>
-        <strong>SMD Packages:</strong> 0201 (50mW/25V) → 0402 (62.5mW/50V) → 0603 (100mW/75V) → 0805 (125mW/150V) → 1206 (250mW/200V) → 2512 (1W/200V)<br>
-        <strong>Through-hole:</strong> Axial 1/4W (250mW/250V) → 1/2W (500mW/350V) → 1W (1W/350V) → 2W (2W/500V) → 5W (5W/500V)<br>
+        <strong>SMD Packages:</strong> 0201 (50mW/15V) → 0402 (62mW/50V) → 0603 (100mW/50V) → 0805 (125mW/150V) → 1206 (250mW/200V) → 1210 (500mW/200V) → 2010 (750mW/200V) → 2512 (1W/200V)<br>
+        <strong>Through-hole:</strong> Axial 1/4W (250mW/500V) → 1/2W (500mW/500V) → 1W (1W/500V) → 2W (2W/500V) → 5W (5W/500V)<br>
         <strong>⚡ Safety Factor:</strong> Calculator recommends 2.5x power margin for reliability
     </div>
 
@@ -588,9 +588,9 @@
             
             // Рекомендации по корпусам SMD резисторов
             const smdPackages = [
-                { size: '0201', power: 0.05, voltage: 25, name: '0201 (0.6×0.3mm)' },
-                { size: '0402', power: 0.0625, voltage: 50, name: '0402 (1.0×0.5mm)' },
-                { size: '0603', power: 0.1, voltage: 75, name: '0603 (1.6×0.8mm)' },
+                { size: '0201', power: 0.05, voltage: 15, name: '0201 (0.6×0.3mm)' },
+                { size: '0402', power: 0.062, voltage: 50, name: '0402 (1.0×0.5mm)' },
+                { size: '0603', power: 0.1, voltage: 50, name: '0603 (1.6×0.8mm)' },
                 { size: '0805', power: 0.125, voltage: 150, name: '0805 (2.0×1.25mm)' },
                 { size: '1206', power: 0.25, voltage: 200, name: '1206 (3.2×1.6mm)' },
                 { size: '1210', power: 0.5, voltage: 200, name: '1210 (3.2×2.5mm)' },
@@ -600,9 +600,9 @@
             
             // Рекомендации по выводным резисторам
             const throughHolePackages = [
-                { type: 'Axial 1/4W', power: 0.25, voltage: 250, name: 'Axial 1/4W (Ø2.3×6mm)' },
-                { type: 'Axial 1/2W', power: 0.5, voltage: 350, name: 'Axial 1/2W (Ø3.2×9mm)' },
-                { type: 'Axial 1W', power: 1.0, voltage: 350, name: 'Axial 1W (Ø3.6×10mm)' },
+                { type: 'Axial 1/4W', power: 0.25, voltage: 500, name: 'Axial 1/4W (Ø2.3×6mm)' },
+                { type: 'Axial 1/2W', power: 0.5, voltage: 500, name: 'Axial 1/2W (Ø3.2×9mm)' },
+                { type: 'Axial 1W', power: 1.0, voltage: 500, name: 'Axial 1W (Ø3.6×10mm)' },
                 { type: 'Axial 2W', power: 2.0, voltage: 500, name: 'Axial 2W (Ø5×12mm)' },
                 { type: 'Axial 5W', power: 5.0, voltage: 500, name: 'Axial 5W (Ø7×16mm)' }
             ];
