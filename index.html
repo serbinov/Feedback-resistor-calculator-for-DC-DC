@@ -373,13 +373,6 @@
         <img src="image.png" alt="DC/DC Feedback Resistor Circuit Diagram" title="Feedback resistor circuit showing R1 (upper) and R2 (lower) configuration">
     </div>
 
-    <div class="description">
-        <strong>📊 Resistor Specifications & Package Info</strong><br>
-        <strong>SMD Packages:</strong> 0201 (50mW/25V) → 0402 (62.5mW/50V) → 0603 (100mW/75V) → 0805 (125mW/150V) → 1206 (250mW/200V) → 2512 (1W/200V)<br>
-        <strong>Through-hole:</strong> Axial 1/4W (250mW/250V) → 1/2W (500mW/350V) → 1W (1W/350V) → 2W (2W/500V) → 5W (5W/500V)<br>
-        <strong>⚡ Safety Factor:</strong> Calculator recommends 2.5x power margin for reliability
-    </div>
-
     <div class="section">
         <div class="input-row">
             <label for="vref">Reference Voltage (Vref/FB)</label>
@@ -465,6 +458,13 @@
         <button onclick="calculateResistors()">Calculate</button>
         
         <div id="resistor_result" class="result"></div>
+    </div>
+
+    <div class="description">
+        <strong>📊 Resistor Specifications & Package Info</strong><br>
+        <strong>SMD Packages:</strong> 0201 (50mW/25V) → 0402 (62.5mW/50V) → 0603 (100mW/75V) → 0805 (125mW/150V) → 1206 (250mW/200V) → 2512 (1W/200V)<br>
+        <strong>Through-hole:</strong> Axial 1/4W (250mW/250V) → 1/2W (500mW/350V) → 1W (1W/350V) → 2W (2W/500V) → 5W (5W/500V)<br>
+        <strong>⚡ Safety Factor:</strong> Calculator recommends 2.5x power margin for reliability
     </div>
 
     <script>
