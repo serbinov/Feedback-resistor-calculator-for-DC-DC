@@ -564,6 +564,82 @@
             return `>100W`;
         }
 
+        function getRecommendedPackageSize(powerRating, voltage, resistorValue) {
+            // Преобразуем мощность в числовое значение (Ватты)
+            let powerW;
+            if (typeof powerRating === 'string') {
+                if (powerRating.includes('mW')) {
+                    powerW = parseFloat(powerRating) / 1000;
+                } else if (powerRating.includes('W')) {
+                    powerW = parseFloat(powerRating);
+                } else {
+                    powerW = 0.1; // По умолчанию
+                }
+            } else {
+                powerW = powerRating;
+            }
+            
+            // Рекомендации по корпусам SMD резисторов
+            const smdPackages = [
+                { size: '0201', power: 0.05, voltage: 25, name: '0201 (0.6×0.3mm)' },
+                { size: '0402', power: 0.0625, voltage: 50, name: '0402 (1.0×0.5mm)' },
+                { size: '0603', power: 0.1, voltage: 75, name: '0603 (1.6×0.8mm)' },
+                { size: '0805', power: 0.125, voltage: 150, name: '0805 (2.0×1.25mm)' },
+                { size: '1206', power: 0.25, voltage: 200, name: '1206 (3.2×1.6mm)' },
+                { size: '1210', power: 0.5, voltage: 200, name: '1210 (3.2×2.5mm)' },
+                { size: '2010', power: 0.75, voltage: 200, name: '2010 (5.0×2.5mm)' },
+                { size: '2512', power: 1.0, voltage: 200, name: '2512 (6.4×3.2mm)' }
+            ];
+            
+            // Рекомендации по выводным резисторам
+            const throughHolePackages = [
+                { type: 'Axial 1/4W', power: 0.25, voltage: 250, name: 'Axial 1/4W (Ø2.3×6mm)' },
+                { type: 'Axial 1/2W', power: 0.5, voltage: 350, name: 'Axial 1/2W (Ø3.2×9mm)' },
+                { type: 'Axial 1W', power: 1.0, voltage: 350, name: 'Axial 1W (Ø3.6×10mm)' },
+                { type: 'Axial 2W', power: 2.0, voltage: 500, name: 'Axial 2W (Ø5×12mm)' },
+                { type: 'Axial 5W', power: 5.0, voltage: 500, name: 'Axial 5W (Ø7×16mm)' }
+            ];
+            
+            // Проверяем высоковольтные требования (>100В)
+            const highVoltage = voltage > 100;
+            
+            let recommendations = [];
+            
+            // Ищем подходящие SMD корпуса
+            for (const pkg of smdPackages) {
+                if (pkg.power >= powerW && pkg.voltage >= voltage) {
+                    const note = highVoltage && pkg.voltage < 150 ? ' ⚠️ High voltage' : '';
+                    recommendations.push(`SMD ${pkg.name}${note}`);
+                    break; // Берем минимально подходящий
+                }
+            }
+            
+            // Ищем подходящие выводные корпуса
+            for (const pkg of throughHolePackages) {
+                if (pkg.power >= powerW && pkg.voltage >= voltage) {
+                    recommendations.push(`Through-hole ${pkg.name}`);
+                    break; // Берем минимально подходящий
+                }
+            }
+            
+            // Специальные рекомендации для высокого напряжения или мощности
+            if (voltage > 200) {
+                recommendations.push('🔥 Consider high-voltage rated resistors');
+            }
+            
+            if (powerW > 2) {
+                recommendations.push('🌡️ Consider power resistors with heat sinks');
+            }
+            
+            // Рекомендации по току для тонкопленочных резисторов
+            const current = Math.sqrt(powerW / (resistorValue / 1000)); // mA
+            if (current > 100) {
+                recommendations.push('⚡ Consider thick-film or wirewound for high current');
+            }
+            
+            return recommendations.length > 0 ? recommendations : ['Contact manufacturer for custom solution'];
+        }
+
         function calculateResistors() {
             const vref = parseFloat(document.getElementById('vref').value);
             const voutDesired = parseFloat(document.getElementById('vout_desired').value);
@@ -702,7 +778,21 @@
             
             result += `<strong>Recommended Power Ratings:</strong><br>`;
             result += `<strong>R1:</strong> ${recommendedPowerR1} resistor<br>`;
-            result += `<strong>R2:</strong> ${recommendedPowerR2} resistor`;
+            result += `<strong>R2:</strong> ${recommendedPowerR2} resistor<br><br>`;
+            
+            // Рекомендации по корпусам резисторов
+            const packageR1 = getRecommendedPackageSize(recommendedPowerR1, voutActual, r1);
+            const packageR2 = getRecommendedPackageSize(recommendedPowerR2, voutActual, r2);
+            
+            result += `<strong>Recommended Package Sizes:</strong><br>`;
+            result += `<strong>R1 packages:</strong><br>`;
+            packageR1.forEach(pkg => {
+                result += `&nbsp;&nbsp;• ${pkg}<br>`;
+            });
+            result += `<strong>R2 packages:</strong><br>`;
+            packageR2.forEach(pkg => {
+                result += `&nbsp;&nbsp;• ${pkg}<br>`;
+            });
             
             document.getElementById('resistor_result').innerHTML = result;
         }
