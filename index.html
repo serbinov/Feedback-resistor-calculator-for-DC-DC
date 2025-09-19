@@ -523,6 +523,47 @@
             }
         }
 
+        function formatPower(power) {
+            if (power >= 1) {
+                return `${power.toFixed(3)} W`;
+            } else if (power >= 0.001) {
+                return `${(power * 1000).toFixed(2)} mW`;
+            } else {
+                return `${(power * 1000000).toFixed(1)} µW`;
+            }
+        }
+
+        function formatCurrent(current) {
+            if (current >= 1) {
+                return `${current.toFixed(3)} A`;
+            } else if (current >= 0.001) {
+                return `${(current * 1000).toFixed(2)} mA`;
+            } else {
+                return `${(current * 1000000).toFixed(1)} µA`;
+            }
+        }
+
+        function getRecommendedPowerRating(actualPower) {
+            // Рекомендуем резистор с мощностью в 2-3 раза больше расчетной для надежности
+            const safetyFactor = 2.5;
+            const requiredPower = actualPower * safetyFactor;
+            
+            // Стандартные номиналы мощности резисторов
+            const standardPowers = [0.0625, 0.125, 0.25, 0.5, 1, 2, 5, 10, 25, 50, 100]; // Ватты
+            
+            for (const power of standardPowers) {
+                if (requiredPower <= power) {
+                    if (power >= 1) {
+                        return `${power}W`;
+                    } else {
+                        return `${power * 1000}mW`;
+                    }
+                }
+            }
+            
+            return `>100W`;
+        }
+
         function calculateResistors() {
             const vref = parseFloat(document.getElementById('vref').value);
             const voutDesired = parseFloat(document.getElementById('vout_desired').value);
@@ -631,6 +672,13 @@
             const voutActual = vref * (1 + r1 / r2);
             const error = Math.abs(voutActual - voutDesired) / voutDesired * 100;
             
+            // Расчет тока и мощности
+            const totalResistance = r1 + r2; // Ом
+            const dividerCurrent = voutActual / totalResistance; // A
+            const powerR1 = Math.pow(dividerCurrent, 2) * r1; // W
+            const powerR2 = Math.pow(dividerCurrent, 2) * r2; // W
+            const totalPower = powerR1 + powerR2; // W
+            
             let result = `<strong>Results:</strong><br><br>`;
             result += `<strong>Target V<sub>out</sub>:</strong> ${voutDesired.toFixed(3)} V<br>`;
             result += `<strong>Actual V<sub>out</sub>:</strong> ${voutActual.toFixed(3)} V (error ${error.toFixed(2)}%)<br><br>`;
@@ -641,6 +689,20 @@
             
             result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
             if (!r2Standard) result += ` <span class="standard-value">(from ${toleranceText})</span>`;
+            result += `<br><br>`;
+            
+            result += `<strong>Divider Current:</strong> ${formatCurrent(dividerCurrent)}<br>`;
+            result += `<strong>Power R1:</strong> ${formatPower(powerR1)}<br>`;
+            result += `<strong>Power R2:</strong> ${formatPower(powerR2)}<br>`;
+            result += `<strong>Total Power:</strong> ${formatPower(totalPower)}<br><br>`;
+            
+            // Рекомендации по мощности резисторов
+            const recommendedPowerR1 = getRecommendedPowerRating(powerR1);
+            const recommendedPowerR2 = getRecommendedPowerRating(powerR2);
+            
+            result += `<strong>Recommended Power Ratings:</strong><br>`;
+            result += `<strong>R1:</strong> ${recommendedPowerR1} resistor<br>`;
+            result += `<strong>R2:</strong> ${recommendedPowerR2} resistor`;
             
             document.getElementById('resistor_result').innerHTML = result;
         }
