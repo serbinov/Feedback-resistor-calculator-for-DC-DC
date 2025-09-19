@@ -460,12 +460,7 @@
         <div id="resistor_result" class="result"></div>
     </div>
 
-    <div class="description">
-        <strong>📊 Resistor Specifications & Package Info</strong><br>
-        <strong>SMD Packages:</strong> 0201 (50mW/15V) → 0402 (62mW/50V) → 0603 (100mW/50V) → 0805 (125mW/150V) → 1206 (250mW/200V) → 1210 (500mW/200V) → 2010 (750mW/200V) → 2512 (1W/200V)<br>
-        <strong>Through-hole:</strong> Axial 1/4W (250mW/500V) → 1/2W (500mW/500V) → 1W (1W/500V) → 2W (2W/500V) → 5W (5W/500V)<br>
-        <strong>⚡ Safety Factor:</strong> Calculator recommends 2.5x power margin for reliability
-    </div>
+
 
     <script>
         // Стандартные ряды резисторов
@@ -850,16 +845,37 @@
 
     <!-- Technical Reference -->
     <div class="tech-reference" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin: 20px; font-size: 12px; color: #666;">
-        <h4 style="margin: 0 0 10px 0; color: #495057;">📚 SMD Resistor Technical Reference</h4>
-        <div style="font-family: 'Courier New', monospace; line-height: 1.4;">
-            <strong>0201:</strong> 50mW/15V (max. 50V)<br>
-            <strong>0402:</strong> 62mW/50V (max. 100V)<br>
-            <strong>0603:</strong> 100mW/50V (max. 100V)<br>
-            <strong>0805:</strong> 125mW/150V (max. 200V)<br>
-            <strong>1206:</strong> 250mW/200V (max. 400V)<br>
-            <strong>2010:</strong> 750mW/200V (max. 400V)<br>
-            <strong>2512:</strong> 1W/200V (max. 400V)
+        <h4 style="margin: 0 0 10px 0; color: #495057;">� Resistor Specifications & Package Info</h4>
+        
+        <div style="margin-bottom: 12px;">
+            <strong style="color: #495057;">SMD Packages:</strong>
+            <div style="font-family: 'Courier New', monospace; line-height: 1.4; margin-top: 4px;">
+                <strong>0201:</strong> 50mW/15V (max. 50V)<br>
+                <strong>0402:</strong> 62mW/50V (max. 100V)<br>
+                <strong>0603:</strong> 100mW/50V (max. 100V)<br>
+                <strong>0805:</strong> 125mW/150V (max. 200V)<br>
+                <strong>1206:</strong> 250mW/200V (max. 400V)<br>
+                <strong>1210:</strong> 500mW/200V (max. 400V)<br>
+                <strong>2010:</strong> 750mW/200V (max. 400V)<br>
+                <strong>2512:</strong> 1W/200V (max. 400V)
+            </div>
         </div>
+
+        <div style="margin-bottom: 12px;">
+            <strong style="color: #495057;">Through-hole Packages:</strong>
+            <div style="font-family: 'Courier New', monospace; line-height: 1.4; margin-top: 4px;">
+                <strong>1/4W:</strong> 250mW/500V (Axial Ø2.3×6mm)<br>
+                <strong>1/2W:</strong> 500mW/500V (Axial Ø3.2×9mm)<br>
+                <strong>1W:</strong> 1W/500V (Axial Ø3.6×10mm)<br>
+                <strong>2W:</strong> 2W/500V (Axial Ø5×12mm)<br>
+                <strong>5W:</strong> 5W/500V (Axial Ø7×16mm)
+            </div>
+        </div>
+
+        <div style="font-size: 11px; color: #28a745; font-weight: bold;">
+            ⚡ Safety Factor: Calculator recommends 2.5x power margin for reliability
+        </div>
+        
         <div style="font-size: 10px; margin-top: 8px; font-style: italic;">
             *Working voltage/Maximum voltage ratings based on industry standards
         </div>
