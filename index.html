@@ -471,6 +471,14 @@
             /* Shift specified input fields left by 50% on desktop */
             .input-with-unit.move-left { transform: translateX(-70%); transition: transform 0.18s ease; }
             select.move-left { transform: translateX(-70%); transition: transform 0.18s ease; display:inline-block; }
+
+            /* Make the Resistor Series select wider on desktop (expand to the right) */
+            #resistor_tolerance {
+                width: 40%;
+                max-width: 40%;
+                flex: 0 0 40%;
+                display: inline-block;
+            }
             
             .range-inputs {
                 width: 60%;
