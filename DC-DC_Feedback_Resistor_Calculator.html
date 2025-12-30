@@ -56,16 +56,6 @@
     
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     
-    <!-- Google Analytics 4 -->
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3PHDMJ17WG"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-3PHDMJ17WG');
-    </script>
-    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -225,27 +215,18 @@
         .tabs {
             display: flex;
             margin-bottom: 15px;
-            gap: 5px;
+            border-bottom: 1px solid #ddd;
         }
         .tab {
             flex: 1;
             text-align: center;
-            padding: 10px 8px;
+            padding: 8px;
             cursor: pointer;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border-bottom: 3px solid transparent;
             font-size: 14px;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
-        .tab:hover {
-            background-color: #e0e0e0;
-            border-color: #bbb;
         }
         .tab.active {
-            background-color: #3498db;
-            color: white;
-            border-color: #2980b9;
+            border-bottom: 3px solid #3498db;
             font-weight: bold;
         }
         .tab-content {
@@ -371,44 +352,11 @@
             
             .tab {
                 font-size: 13px;
-                padding: 8px 6px;
+                padding: 6px 4px;
             }
             
             .input-row {
                 margin-bottom: 10px;
-            }
-
-            /* Make inputs and selects shorter on small screens (approx. quarter width) */
-            .input-row input,
-            .input-row select,
-            .input-with-unit input {
-                width: 25%;
-            }
-
-            /* Ensure inputs inside .input-with-unit don't expand (set flex basis) */
-            .input-row .input-with-unit input,
-            .input-row .input-with-unit select {
-                flex: 0 0 25%;
-                max-width: 25%;
-                width: 25%;
-            }
-
-            /* Standalone inputs/selects (direct children of .input-row) */
-            .input-row > input,
-            .input-row > select {
-                width: 25%;
-                max-width: 25%;
-            }
-
-            /* Make the resistor tolerance select larger (+30%) */
-            #resistor_tolerance {
-                width: 65%;
-                max-width: 65%;
-                flex: 0 0 65%;
-            }
-
-            .input-with-unit .unit {
-                margin-left: 6px;
             }
             
             button {
@@ -1035,19 +983,19 @@
         </div>
     </div>
 
-    <div class="contact-card" style="background:#fff; border:1px solid #e6e6e6; border-radius:8px; padding:15px; margin:20px; font-size:14px; color:#333; text-align:center;">
-        <h4 style="margin:0 0 8px 0;">Custom Electronics Design & Development</h4>
-        <p style="margin:0 0 12px;">Transforming complex concepts into market-ready products with precision engineering.</p>
-        <ul style="margin:0 0 8px;padding-left:18px; line-height:1.45; display:inline-block; text-align:left;">
-            <li>🔄 <strong>Full-Cycle R&D:</strong> Comprehensive support from feasibility studies and prototyping to mass production scaling.</li>
-            <li>📐 <strong>Circuit Design & Simulation:</strong> Reliable schematic capture tailored to cost and performance requirements.</li>
-            <li>🟩 <strong>Advanced PCB Layout:</strong> High-density interconnect (HDI) and multi-layer designs optimized for Signal Integrity and EMC/EMI compliance.</li>
-            <li>📋 <strong>Design for Manufacturing (DFM):</strong> Production-ready documentation, including Gerber files, pick-and-place data, and cost-optimized BOMs.</li>
-            <li>💻 <strong>Embedded Firmware Development:</strong> Efficient C/C++ firmware for STM32, ESP32, and other architectures (Bare-metal & RTOS).</li>
-            <li>🔧 <strong>Mechanical Engineering (SolidWorks):</strong> 3D CAD modeling, thermal management, and custom enclosure design for seamless ECAD/MCAD integration.</li>
+    <div class="contact-card" style="background:#fff; border:1px solid #e6e6e6; border-radius:8px; padding:15px; margin:20px; font-size:14px; color:#333;">
+        <h4 style="margin:0 0 8px 0;">Custom Electronics Development</h4>
+        <p style="margin:0 0 8px;">Turn your innovative ideas into reality with expert engineering solutions.</p>
+        <ul style="margin:0 0 8px;padding-left:18px; line-height:1.4;">
+            <li>🔄 <strong>Full-Cycle Development:</strong> From initial concept to functional prototype and production.</li>
+            <li>📐 <strong>Professional Schematic Design:</strong> Precise schematics tailored to your specific requirements.</li>
+            <li>🟩 <strong>Expert PCB Layout & Routing:</strong> High-quality board designs focused on reliability and signal integrity.</li>
+            <li>📋 <strong>Manufacturing Documentation:</strong> Complete Gerber files and BOMs ready for assembly.</li>
+            <li>💻 <strong>Embedded Firmware:</strong> Custom C/C++ code for STM32, ESP32, and other microcontrollers.</li>
+            <li>🔧 <strong>Mechanical Design (SolidWorks):</strong> Detailed 3D modeling and enclosures for your electronics.</li>
         </ul>
-        <p style="margin:10px 0 0 0;">📧 <a href="mailto:serbinovoleg@gmail.com">serbinovoleg@gmail.com</a></p>
-        <p style="margin:4px 0 0 0;">🌐 <a href="https://serbinov.github.io/" target="_blank" rel="noopener">Website</a> • <a href="https://github.com/serbinov" target="_blank" rel="noopener">GitHub</a></p>
+        <p style="margin:8px 0 0 0;"><strong>Let's discuss your project!</strong></p>
+        <p style="margin:8px 0 0 0;">📧 <a href="mailto:serbinovoleg@gmail.com">serbinovoleg@gmail.com</a> • 🌐 <a href="https://serbinov.github.io/" target="_blank" rel="noopener">Website</a> • <a href="https://github.com/serbinov" target="_blank" rel="noopener">GitHub</a></p>
     </div>
 
     <!-- Semantic Content for SEO (Hidden) -->
@@ -1091,7 +1039,8 @@
     <div class="developer-info">
         <div class="developer-name">Developed by Oleg Serbinov</div>
         <div>
-            <span style="font-weight:bold;">v1.0</span> • <span>2025-12-30</span>
+            <a href="https://serbinov.github.io/" target="_blank" rel="author">Website</a>
+            <a href="https://github.com/serbinov" target="_blank" rel="author">GitHub</a>
         </div>
     </div>
 </body>
