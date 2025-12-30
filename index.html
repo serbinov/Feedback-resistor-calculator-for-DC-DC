@@ -378,30 +378,37 @@
                 margin-bottom: 10px;
             }
 
-            /* Make inputs and selects shorter on small screens (approx. half width) */
+            /* Make inputs and selects shorter on small screens (approx. quarter width) */
             .input-row input,
             .input-row select,
             .input-with-unit input {
-                width: 50%;
+                width: 25%;
             }
 
             /* Ensure inputs inside .input-with-unit don't expand (set flex basis) */
             .input-row .input-with-unit input,
             .input-row .input-with-unit select {
-                flex: 0 0 50%;
-                max-width: 50%;
-                width: 50%;
+                flex: 0 0 25%;
+                max-width: 25%;
+                width: 25%;
             }
 
             /* Standalone inputs/selects (direct children of .input-row) */
             .input-row > input,
             .input-row > select {
-                width: 50%;
-                max-width: 50%;
+                width: 25%;
+                max-width: 25%;
+            }
+
+            /* Make the resistor tolerance select larger (+30%) */
+            #resistor_tolerance {
+                width: 65%;
+                max-width: 65%;
+                flex: 0 0 65%;
             }
 
             .input-with-unit .unit {
-                margin-left: 8px;
+                margin-left: 6px;
             }
             
             button {
