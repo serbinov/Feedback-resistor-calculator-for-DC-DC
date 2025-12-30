@@ -6,15 +6,15 @@
     <title>DC/DC Feedback Resistor Calculator</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Online DC/DC converter feedback resistor calculator. Calculate optimal R1 and R2 values for voltage divider networks in switching power supplies, buck converters, boost converters, and step-down regulators.">
-    <meta name="keywords" content="feedback resistor calculator, DC/DC converter calculator, voltage divider calculator, resistor divider calculator, switching regulator calculator, buck converter resistor, boost converter resistor, step-down converter calculator, power supply feedback network, voltage reference calculator, R1 R2 calculator, feedback network calculator, switching power supply calculator, voltage regulator calculator, DC converter resistor values, power electronics calculator, resistor ratio calculator, voltage divider network, feedback loop calculator, switching converter design, SMPS resistor calculator, PWM controller feedback, LDO feedback network, adjustable regulator calculator, output voltage calculator, resistor selection tool, E24 resistor series, E96 resistor series, precision resistor calculator, standard resistor values, feedback circuit design, voltage setting resistors, dc-dc feedback design, switching mode power supply, power converter design, voltage regulation circuit, resistor tolerance calculator, feedback component calculator, electronic circuit calculator, power supply design tool, voltage converter calculator, switching topology calculator, buck boost converter, flyback converter feedback, forward converter resistor, half bridge converter, full bridge feedback network, resonant converter calculator, isolated converter feedback, non-isolated converter design, point of load regulator, module design calculator, embedded power supply, battery charger feedback, LED driver feedback, motor drive feedback, telecom power supply, server power calculator, automotive converter design, industrial power supply, medical device power, aerospace power design">
+    <meta name="description" content="Online DC/DC converter feedback resistor calculator. Calculate optimal R1 and R2 values for voltage divider networks in switching power supplies, buck converters, boost converters, and step-down regulators. Also offers Custom Electronics Design & Development services (PCB layout, embedded firmware, DFM, SolidWorks mechanical design).">
+    <meta name="keywords" content="feedback resistor calculator, DC/DC converter calculator, voltage divider calculator, resistor divider calculator, switching regulator calculator, buck converter resistor, boost converter resistor, step-down converter calculator, power supply feedback network, voltage reference calculator, R1 R2 calculator, feedback network calculator, switching power supply calculator, voltage regulator calculator, DC converter resistor values, power electronics calculator, resistor ratio calculator, voltage divider network, feedback loop calculator, switching converter design, SMPS resistor calculator, PWM controller feedback, LDO feedback network, adjustable regulator calculator, output voltage calculator, resistor selection tool, E24 resistor series, E96 resistor series, precision resistor calculator, standard resistor values, feedback circuit design, voltage setting resistors, dc-dc feedback design, switching mode power supply, power converter design, voltage regulation circuit, resistor tolerance calculator, feedback component calculator, electronic circuit calculator, power supply design tool, voltage converter calculator, switching topology calculator, buck boost converter, flyback converter feedback, forward converter resistor, half bridge converter, full bridge feedback network, resonant converter calculator, isolated converter feedback, non-isolated converter design, point of load regulator, module design calculator, embedded power supply, battery charger feedback, LED driver feedback, motor drive feedback, telecom power supply, server power calculator, automotive converter design, industrial power supply, medical device power, aerospace power design, custom electronics design, electronics R&D, full-cycle R&D, feasibility studies, prototyping, mass production, circuit design simulation, HDI PCB design, advanced PCB layout, signal integrity, EMC EMI, design for manufacturing, DFM services, Gerber files, pick-and-place data, cost-optimized BOMs, embedded firmware STM32, ESP32, bare-metal, RTOS, mechanical engineering SolidWorks, ECAD MCAD integration, thermal management, custom enclosure design">
     <meta name="author" content="Oleg Serbinov">
     <meta name="robots" content="index, follow">
     <meta name="language" content="English">
     
     <!-- Alternative Descriptions for Different Contexts -->
-    <meta name="description" lang="en-US" content="Free online feedback resistor calculator for DC/DC switching converters. Automatically selects R1 and R2 values from standard E24/E96 series for precise output voltage setting.">
-    <meta name="twitter:description" content="Calculate DC/DC converter feedback resistors R1 & R2. Supports buck, boost, and buck-boost topologies with standard resistor selection from E24/E96 series.">
+    <meta name="description" lang="en-US" content="Free online feedback resistor calculator for DC/DC switching converters. Automatically selects R1 and R2 values from standard E24/E96 series for precise output voltage setting. Also provides Custom Electronics Design & Development services including PCB HDI layout, embedded firmware and mechanical design.">
+    <meta name="twitter:description" content="Calculate DC/DC converter feedback resistors R1 & R2. Supports buck, boost, and buck-boost topologies. Also offering custom electronics design, advanced PCB layout, embedded firmware and SolidWorks mechanical design.">
     
     <!-- Geographic and Topical Variations -->
     <meta name="geo.region" content="Worldwide">
@@ -113,7 +113,14 @@
             "Standard resistor value recommendation",
             "Package size recommendation based on power rating",
             "Multiple tolerance support (1% and 5%)",
-            "Real-time calculation with error estimation"
+            "Real-time calculation with error estimation",
+            "Custom Electronics Design & Development",
+            "Full-Cycle R&D and prototyping",
+            "Circuit design & simulation",
+            "Advanced PCB layout (HDI) and Signal Integrity",
+            "Design for Manufacturing (DFM) and Gerber/BOM delivery",
+            "Embedded firmware development (STM32, ESP32, RTOS)",
+            "Mechanical engineering (SolidWorks) and ECAD/MCAD integration"
         ],
         "keywords": [
             "feedback resistor calculator", "DC/DC converter calculator", "voltage divider calculator", 
@@ -122,7 +129,14 @@
             "voltage reference calculator", "R1 R2 calculator", "feedback network calculator",
             "switching power supply calculator", "voltage regulator calculator", "SMPS calculator",
             "PWM controller feedback", "standard resistor values", "E24 resistor series", "E96 resistor series",
-            "precision resistor calculator", "power electronics calculator", "resistor ratio calculator"
+            "precision resistor calculator", "power electronics calculator", "resistor ratio calculator",
+            "custom electronics design", "electronics R&D", "full-cycle R&D", "feasibility studies",
+            "prototyping", "mass production scaling", "circuit design simulation", "HDI PCB design",
+            "advanced PCB layout", "signal integrity", "EMC EMI", "design for manufacturing",
+            "DFM services", "Gerber files", "pick-and-place data", "cost-optimized BOMs",
+            "embedded firmware STM32", "ESP32 firmware", "bare-metal", "RTOS",
+            "mechanical engineering SolidWorks", "ECAD MCAD integration", "thermal management",
+            "custom enclosure design"
         ],
         "about": {
             "@type": "Thing",
@@ -470,7 +484,7 @@
 
             /* Shift specified input fields left by 50% on desktop */
             .input-with-unit.move-left { transform: translateX(-70%); transition: transform 0.18s ease; }
-            select.move-left { transform: translateX(-70%); transition: transform 0.18s ease; display:inline-block; }
+            select.move-left { transform: translateX(-55%); transition: transform 0.18s ease; display:inline-block; }
 
             /* Make the Resistor Series select wider on desktop (expand to the right) */
             #resistor_tolerance {
@@ -478,6 +492,11 @@
                 max-width: 40%;
                 flex: 0 0 40%;
                 display: inline-block;
+            }
+
+            /* Reduce the label width for that specific row so select doesn't wrap */
+            .input-row label[for="resistor_tolerance"] {
+                width: 58%;
             }
             
             .range-inputs {
