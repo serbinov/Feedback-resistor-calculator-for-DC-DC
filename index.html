@@ -385,6 +385,21 @@
                 width: 50%;
             }
 
+            /* Ensure inputs inside .input-with-unit don't expand (set flex basis) */
+            .input-row .input-with-unit input,
+            .input-row .input-with-unit select {
+                flex: 0 0 50%;
+                max-width: 50%;
+                width: 50%;
+            }
+
+            /* Standalone inputs/selects (direct children of .input-row) */
+            .input-row > input,
+            .input-row > select {
+                width: 50%;
+                max-width: 50%;
+            }
+
             .input-with-unit .unit {
                 margin-left: 8px;
             }
