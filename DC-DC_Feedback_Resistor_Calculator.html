@@ -484,10 +484,11 @@
         </div>
         
         <div class="input-row">
-            <label for="resistor_tolerance">Resistor Tolerance</label>
+            <label for="resistor_tolerance">Resistor Series</label>
             <select id="resistor_tolerance">
                 <option value="1">1% (E96 series)</option>
                 <option value="5">5% (E24 series)</option>
+                <option value="both">E96 + E24 (choose best)</option>
             </select>
         </div>
 
@@ -573,37 +574,61 @@
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            document.querySelector(`.tab[onclick="showTab('${tabName}')`).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
-        function isStandardValue(value, tolerance) {
-            const series = tolerance === 1 ? E96 : E24;
-            const normalized = value / Math.pow(10, Math.floor(Math.log10(value)));
-            return series.some(x => Math.abs(x - normalized) < 0.001);
+        function getSeriesForValue(value, tolerance) {
+            // value is in the same units used when calling (kΩ in some places)
+            const checkSeries = (seriesArr, seriesName) => {
+                const decade = Math.pow(10, Math.floor(Math.log10(value)));
+                const normalized = value / decade;
+                return seriesArr.some(x => Math.abs(x - normalized) < 0.001) ? seriesName : null;
+            };
+
+            if (tolerance === 'both') {
+                return checkSeries(E96, 'E96') || checkSeries(E24, 'E24') || null;
+            } else if (tolerance === '1') {
+                return checkSeries(E96, 'E96') || null;
+            } else {
+                return checkSeries(E24, 'E24') || null;
+            }
         }
 
         function findClosestResistor(value, tolerance) {
-            const series = tolerance === 1 ? E96 : E24;
-            let decade = Math.pow(10, Math.floor(Math.log10(value)));
-            const normalized = value / decade;
-            
-            let closest = series[0];
-            let minDiff = Math.abs(normalized - closest);
-            
-            for (const r of series) {
-                const diff = Math.abs(normalized - r);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closest = r;
+            // returns { value: number, series: 'E96'|'E24' }
+            const searchInSeries = (seriesArr, seriesName) => {
+                let decade = Math.pow(10, Math.floor(Math.log10(value)));
+                const normalized = value / decade;
+                let closest = seriesArr[0];
+                let minDiff = Math.abs(normalized - closest);
+                for (const r of seriesArr) {
+                    const diff = Math.abs(normalized - r);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = r;
+                    }
                 }
+                if (normalized > 9.5 && closest < 1.5) {
+                    decade *= 10;
+                }
+                return { value: closest * decade, series: seriesName, diff: Math.abs(closest * decade - value) };
+            };
+
+            if (tolerance === 'both') {
+                const cand1 = searchInSeries(E96, 'E96');
+                const cand2 = searchInSeries(E24, 'E24');
+                if (cand1.diff < cand2.diff) return { value: cand1.value, series: cand1.series };
+                if (cand2.diff < cand1.diff) return { value: cand2.value, series: cand2.series };
+                // tie-breaker prefer higher precision E96
+                return { value: Math.min(cand1.value, cand2.value), series: 'E96' };
+            } else if (tolerance === '1') {
+                const c = searchInSeries(E96, 'E96');
+                return { value: c.value, series: c.series };
+            } else {
+                const c = searchInSeries(E24, 'E24');
+                return { value: c.value, series: c.series };
             }
-            
-            if (normalized > 9.5 && closest < 1.5) {
-                decade *= 10;
-            }
-            
-            return closest * decade;
         }
 
 
@@ -738,8 +763,11 @@
         function calculateResistors() {
             const vref = parseFloat(document.getElementById('vref').value);
             const voutDesired = parseFloat(document.getElementById('vout_desired').value);
-            const tolerance = parseInt(document.getElementById('resistor_tolerance').value);
-            const toleranceText = tolerance === 1 ? "1% (E96 series)" : "5% (E24 series)";
+            const tolerance = document.getElementById('resistor_tolerance').value; // '1', '5', or 'both'
+            let toleranceText;
+            if (tolerance === '1') toleranceText = "1% (E96 series)";
+            else if (tolerance === '5') toleranceText = "5% (E24 series)";
+            else toleranceText = "E96 + E24 (choose best)";
             
             if (isNaN(vref) || isNaN(voutDesired)) {
                 document.getElementById('resistor_result').innerHTML = 
@@ -753,7 +781,7 @@
                 return;
             }
             
-            let r1, r2, r1Standard = true, r2Standard = true;
+            let r1, r2, r1Series = null, r2Series = null;
             const targetRatio = (voutDesired / vref) - 1;
             const activeTab = document.querySelector('.tab.active').getAttribute('onclick').replace("showTab('", "").replace("')", "");
 
@@ -767,25 +795,33 @@
                     return;
                 }
 
-                const series = tolerance === 1 ? E96 : E24;
-                let bestR1 = 0, bestR2 = 0, minError = Infinity;
+                const seriesList = [];
+                if (tolerance === '1') seriesList.push({arr: E96, name: 'E96'});
+                else if (tolerance === '5') seriesList.push({arr: E24, name: 'E24'});
+                else { seriesList.push({arr: E96, name: 'E96'}); seriesList.push({arr: E24, name: 'E24'}); }
+
+                let bestR1 = 0, bestR2 = 0, bestR1Series = null, bestR2Series = null, minError = Infinity;
                 
                 for (let decade = Math.pow(10, Math.floor(Math.log10(minR))); decade <= maxR*10; decade *= 10) {
-                    for (const value of series) {
-                        const r2Candidate = value * decade;
-                        if (r2Candidate < minR || r2Candidate > maxR) continue;
-                        
-                        const r1Candidate = r2Candidate * targetRatio;
-                        if (r1Candidate < minR || r1Candidate > maxR) continue;
-                        
-                        const r1Std = findClosestResistor(r1Candidate, tolerance);
-                        const actualVout = vref * (1 + r1Std / r2Candidate);
-                        const error = Math.abs(actualVout - voutDesired);
-                        
-                        if (error < minError) {
-                            minError = error;
-                            bestR1 = r1Std;
-                            bestR2 = r2Candidate;
+                    for (const seriesObj of seriesList) {
+                        for (const value of seriesObj.arr) {
+                            const r2Candidate = value * decade;
+                            if (r2Candidate < minR || r2Candidate > maxR) continue;
+                            
+                            const r1Candidate = r2Candidate * targetRatio;
+                            if (r1Candidate < minR || r1Candidate > maxR) continue;
+                            
+                            const r1StdObj = findClosestResistor(r1Candidate, tolerance);
+                            const actualVout = vref * (1 + r1StdObj.value / r2Candidate);
+                            const error = Math.abs(actualVout - voutDesired);
+                            
+                            if (error < minError) {
+                                minError = error;
+                                bestR1 = r1StdObj.value;
+                                bestR1Series = r1StdObj.series;
+                                bestR2 = r2Candidate;
+                                bestR2Series = seriesObj.name;
+                            }
                         }
                     }
                 }
@@ -798,6 +834,8 @@
                 
                 r1 = bestR1;
                 r2 = bestR2;
+                r1Series = bestR1Series;
+                r2Series = bestR2Series;
             } 
             else if (activeTab === 'single') {
                 const knownPos = document.getElementById('known_resistor_pos').value;
@@ -817,11 +855,15 @@
                     r1 = r2 * targetRatio;
                 }
                 
-                r1Standard = isStandardValue(r1/1000, tolerance);
-                r2Standard = isStandardValue(r2/1000, tolerance);
+                r1Series = getSeriesForValue(r1/1000, tolerance);
+                r2Series = getSeriesForValue(r2/1000, tolerance);
                 
-                r1 = findClosestResistor(r1, tolerance);
-                r2 = findClosestResistor(r2, tolerance);
+                const r1Obj = findClosestResistor(r1, tolerance);
+                r1 = r1Obj.value;
+                r1Series = r1Obj.series || r1Series;
+                const r2Obj = findClosestResistor(r2, tolerance);
+                r2 = r2Obj.value;
+                r2Series = r2Obj.series || r2Series;
             } 
             else {
                 r1 = parseFloat(document.getElementById('r1_manual').value) * 1000;
@@ -833,11 +875,15 @@
                     return;
                 }
                 
-                r1Standard = isStandardValue(r1/1000, tolerance);
-                r2Standard = isStandardValue(r2/1000, tolerance);
+                r1Series = getSeriesForValue(r1/1000, tolerance);
+                r2Series = getSeriesForValue(r2/1000, tolerance);
                 
-                if (!r1Standard) r1 = findClosestResistor(r1, tolerance);
-                if (!r2Standard) r2 = findClosestResistor(r2, tolerance);
+                const r1Obj = findClosestResistor(r1, tolerance);
+                r1 = r1Obj.value;
+                r1Series = r1Obj.series || r1Series;
+                const r2Obj = findClosestResistor(r2, tolerance);
+                r2 = r2Obj.value;
+                r2Series = r2Obj.series || r2Series;
             }
             
             const voutActual = vref * (1 + r1 / r2);
@@ -855,11 +901,11 @@
             result += `<strong>Actual V<sub>out</sub>:</strong> ${voutActual.toFixed(3)} V (error ${error.toFixed(2)}%)<br><br>`;
             
             result += `<strong>R1 (upper):</strong> ${formatResistorValue(r1)}`;
-            if (!r1Standard) result += ` <span class="standard-value">(from ${toleranceText})</span>`;
+            if (r1Series) result += ` <span class="standard-value">(${r1Series} series)</span>`;
             result += `<br>`;
             
             result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
-            if (!r2Standard) result += ` <span class="standard-value">(from ${toleranceText})</span>`;
+            if (r2Series) result += ` <span class="standard-value">(${r2Series} series)</span>`;
             result += `<br><br>`;
             
             result += `<strong>Divider Current:</strong> ${formatCurrent(dividerCurrent)}<br>`;
