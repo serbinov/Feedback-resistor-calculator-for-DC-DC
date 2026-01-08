@@ -559,6 +559,14 @@
         </div>
         
         <div class="input-row">
+            <label for="vref_tol">Vref Tolerance (%)</label>
+            <div class="input-with-unit move-left">
+                <input type="number" id="vref_tol" step="0.1" value="0.1" min="0" max="10">
+                <span class="unit">%</span>
+            </div>
+        </div>
+        
+        <div class="input-row">
             <label for="vout_desired">Output Voltage</label>
             <div class="input-with-unit move-left">
                 <input type="number" id="vout_desired" step="0.001" value="3.3" min="0.1" max="50">
@@ -571,8 +579,24 @@
             <select id="resistor_tolerance" class="move-left">
                 <option value="1">1% (E96 series)</option>
                 <option value="5">5% (E24 series)</option>
-                <option value="both">E96 + E24 (choose best)</option>
+                <option value="both">5%, 1% (E24, E96)</option>
             </select>
+        </div>
+        
+        <div class="input-row">
+            <label for="ppm_r1">PPM for R1 (upper)</label>
+            <div class="input-with-unit move-left">
+                <input type="number" id="ppm_r1" step="1" value="100" min="0" max="1000">
+                <span class="unit">PPM</span>
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <label for="ppm_r2">PPM for R2 (lower)</label>
+            <div class="input-with-unit move-left">
+                <input type="number" id="ppm_r2" step="1" value="100" min="0" max="1000">
+                <span class="unit">PPM</span>
+            </div>
         </div>
 
         <div class="tabs">
@@ -844,10 +868,11 @@
         }
 
         function calculateResistors() {
-            const vref = parseFloat(document.getElementById('vref').value);
-            const voutDesired = parseFloat(document.getElementById('vout_desired').value);
+            const vref = parseFloat(document.getElementById('vref').value.replace(',', '.'));
+            const voutDesired = parseFloat(document.getElementById('vout_desired').value.replace(',', '.'));
             const tolerance = document.getElementById('resistor_tolerance').value; // '1', '5', or 'both'
             let toleranceText;
+            let vref_tol = 0.1;
             if (tolerance === '1') toleranceText = "1% (E96 series)";
             else if (tolerance === '5') toleranceText = "5% (E24 series)";
             else toleranceText = "E96 + E24 (choose best)";
@@ -869,8 +894,8 @@
             const activeTab = document.querySelector('.tab.active').getAttribute('onclick').replace("showTab('", "").replace("')", "");
 
             if (activeTab === 'auto') {
-                const minR = parseFloat(document.getElementById('min_resistor').value) * 1000;
-                const maxR = parseFloat(document.getElementById('max_resistor').value) * 1000;
+                const minR = parseFloat(document.getElementById('min_resistor').value.replace(',', '.')) * 1000;
+                const maxR = parseFloat(document.getElementById('max_resistor').value.replace(',', '.')) * 1000;
                 
                 if (isNaN(minR) || isNaN(maxR) || minR >= maxR || minR <= 0 || maxR <= 0) {
                     document.getElementById('resistor_result').innerHTML = 
@@ -922,7 +947,7 @@
             } 
             else if (activeTab === 'single') {
                 const knownPos = document.getElementById('known_resistor_pos').value;
-                const knownValue = parseFloat(document.getElementById('known_resistor_value').value) * 1000;
+                const knownValue = parseFloat(document.getElementById('known_resistor_value').value.replace(',', '.')) * 1000;
                 
                 if (isNaN(knownValue) || knownValue <= 0) {
                     document.getElementById('resistor_result').innerHTML = 
@@ -949,8 +974,8 @@
                 r2Series = r2Obj.series || r2Series;
             } 
             else {
-                r1 = parseFloat(document.getElementById('r1_manual').value) * 1000;
-                r2 = parseFloat(document.getElementById('r2_manual').value) * 1000;
+                r1 = parseFloat(document.getElementById('r1_manual').value.replace(',', '.')) * 1000;
+                r2 = parseFloat(document.getElementById('r2_manual').value.replace(',', '.')) * 1000;
                 
                 if (isNaN(r1) || isNaN(r2) || r1 <= 0 || r2 <= 0) {
                     document.getElementById('resistor_result').innerHTML = 
@@ -990,6 +1015,89 @@
             result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
             if (r2Series) result += ` <span class="standard-value">(${r2Series} series)</span>`;
             result += `<br><br>`;
+            
+            // Tolerance variations
+            const tol_r1 = r1Series === 'E96' ? 0.01 : 0.05;
+            const tol_r2 = r2Series === 'E96' ? 0.01 : 0.05;
+            result += `<strong>Output Voltage Variations due to Resistor Tolerance:</strong><br>`;
+            result += `These are the possible output voltages considering the tolerance of the resistors. All combinations of minimum and maximum values for R1 and R2 are shown.<br>`;
+            result += `R1 tolerance: ${(tol_r1 * 100).toFixed(0)}%, R2 tolerance: ${(tol_r2 * 100).toFixed(0)}%<br>`;
+            const r1_min = r1 * (1 - tol_r1);
+            const r1_max = r1 * (1 + tol_r1);
+            const r2_min = r2 * (1 - tol_r2);
+            const r2_max = r2 * (1 + tol_r2);
+            const vout_min_min = vref * (1 + r1_min / r2_min);
+            const vout_min_max = vref * (1 + r1_min / r2_max);
+            const vout_max_min = vref * (1 + r1_max / r2_min);
+            const vout_max_max = vref * (1 + r1_max / r2_max);
+            result += `Vout (R1 min, R2 min): ${vout_min_min.toFixed(3)} V<br>`;
+            result += `Vout (R1 min, R2 max): ${vout_min_max.toFixed(3)} V<br>`;
+            result += `Vout (R1 max, R2 min): ${vout_max_min.toFixed(3)} V<br>`;
+            result += `Vout (R1 max, R2 max): ${vout_max_max.toFixed(3)} V<br>`;
+            vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
+            const vouts_with_vref = [vout_min_min, vout_min_max, vout_max_min, vout_max_max].map(v => [v * (1 - vref_tol / 100), v * (1 + vref_tol / 100)]).flat();
+            const minVout_with_vref = Math.min(...vouts_with_vref);
+            const maxVout_with_vref = Math.max(...vouts_with_vref);
+            result += `Including Vref tolerance (${vref_tol}%):<br>`;
+            result += `<strong>Minimum Vout: ${minVout_with_vref.toFixed(3)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${maxVout_with_vref.toFixed(3)} V</strong><br><br>`;
+            
+            // Temperature variations
+            const ppm_r1 = parseFloat(document.getElementById('ppm_r1').value.replace(',', '.')) || 100;
+            const ppm_r2 = parseFloat(document.getElementById('ppm_r2').value.replace(',', '.')) || 100;
+            vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
+            result += `<strong>Output Voltage Variations due to Temperature:</strong><br>`;
+            result += `These show how the output voltage changes with temperature, assuming R1 has ${ppm_r1} PPM/°C and R2 has ${ppm_r2} PPM/°C, with nominal temperature of 25°C.<br>`;
+            const temperatures = [-40, 0, 25, 85];
+            let tempVouts = [];
+            for (const t of temperatures) {
+                const deltaT = t - 25;
+                const r1_temp = r1 * (1 + (ppm_r1 / 1e6) * deltaT);
+                const r2_temp = r2 * (1 + (ppm_r2 / 1e6) * deltaT);
+                const vout_temp = vref * (1 + r1_temp / r2_temp);
+                result += `Vout at ${t}°C: ${vout_temp.toFixed(6)} V<br>`;
+                tempVouts.push(vout_temp);
+            }
+            const minTempVout = Math.min(...tempVouts);
+            const maxTempVout = Math.max(...tempVouts);
+            result += `Including Vref tolerance (${vref_tol}%):<br>`;
+            result += `<strong>Minimum Vout: ${(minTempVout * (1 - vref_tol / 100)).toFixed(4)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${(maxTempVout * (1 + vref_tol / 100)).toFixed(4)} V</strong><br>`;
+            result += `<br>`;
+            
+            // Combined variations
+            const allVouts = [];
+            for (const t of temperatures) {
+                const deltaT = t - 25;
+                const r1_temp = r1 * (1 + (ppm_r1 / 1e6) * deltaT);
+                const r2_temp = r2 * (1 + (ppm_r2 / 1e6) * deltaT);
+                const r1_min_temp = r1_temp * (1 - tol_r1);
+                const r1_max_temp = r1_temp * (1 + tol_r1);
+                const r2_min_temp = r2_temp * (1 - tol_r2);
+                const r2_max_temp = r2_temp * (1 + tol_r2);
+                const vouts_temp = [
+                    vref * (1 + r1_min_temp / r2_min_temp),
+                    vref * (1 + r1_min_temp / r2_max_temp),
+                    vref * (1 + r1_max_temp / r2_min_temp),
+                    vref * (1 + r1_max_temp / r2_max_temp)
+                ];
+                allVouts.push(...vouts_temp);
+            }
+            const globalMinVout = Math.min(...allVouts);
+            const globalMaxVout = Math.max(...allVouts);
+            vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
+            const globalMinVout_corrected = globalMinVout * (1 - vref_tol / 100);
+            const globalMaxVout_corrected = globalMaxVout * (1 + vref_tol / 100);
+            const deltaVout = globalMaxVout_corrected - globalMinVout_corrected;
+            const percentDelta = (deltaVout / voutDesired) * 100;
+            result += `<strong>Combined Variations (Tolerance + Temperature + Vref ${vref_tol}%):</strong><br>`;
+            result += `Worst-case variations considering resistor tolerance, temperature, and Vref tolerance effects across all combinations.<br>`;
+            result += `<strong>Minimum Vout:</strong> <strong>${globalMinVout_corrected.toFixed(4)} V</strong><br>`;
+            result += `<strong>Maximum Vout:</strong> <strong>${globalMaxVout_corrected.toFixed(4)} V</strong><br>`;
+            result += `<strong>Delta Vout:</strong> <strong>${deltaVout.toFixed(4)} V</strong><br>`;
+            result += `<strong>Deviation from Target ${voutDesired.toFixed(3)} V:</strong> <strong>±${(percentDelta / 2).toFixed(2)}%</strong><br><br>`;
+            
+            result += `<hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">`;
             
             result += `<strong>Divider Current:</strong> ${formatCurrent(dividerCurrent)}<br>`;
             result += `<strong>Power R1:</strong> ${formatPower(powerR1)}<br>`;
