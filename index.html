@@ -1038,13 +1038,8 @@
             result += `Vout (R1 min, R2 max): ${vout_min_max.toFixed(3)} V<br>`;
             result += `Vout (R1 max, R2 min): ${vout_max_min.toFixed(3)} V<br>`;
             result += `Vout (R1 max, R2 max): ${vout_max_max.toFixed(3)} V<br>`;
-            vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
-            const vouts_with_vref = [vout_min_min, vout_min_max, vout_max_min, vout_max_max].map(v => [v * (1 - vref_tol / 100), v * (1 + vref_tol / 100)]).flat();
-            const minVout_with_vref = Math.min(...vouts_with_vref);
-            const maxVout_with_vref = Math.max(...vouts_with_vref);
-            result += `Including Vref tolerance (${vref_tol}%):<br>`;
-            result += `<strong>Minimum Vout: ${minVout_with_vref.toFixed(3)} V</strong><br>`;
-            result += `<strong>Maximum Vout: ${maxVout_with_vref.toFixed(3)} V</strong><br><br>`;
+            result += `<strong>Minimum Vout: ${Math.min(vout_min_min, vout_min_max, vout_max_min, vout_max_max).toFixed(3)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${Math.max(vout_min_min, vout_min_max, vout_max_min, vout_max_max).toFixed(3)} V</strong><br><br>`;
             
             // Temperature variations
             const ppm_r1 = parseFloat(document.getElementById('ppm_r1').value.replace(',', '.')) || 100;
@@ -1064,10 +1059,15 @@
             }
             const minTempVout = Math.min(...tempVouts);
             const maxTempVout = Math.max(...tempVouts);
-            result += `Including Vref tolerance (${vref_tol}%):<br>`;
-            result += `<strong>Minimum Vout: ${(minTempVout * (1 - vref_tol / 100)).toFixed(6)} V</strong><br>`;
-            result += `<strong>Maximum Vout: ${(maxTempVout * (1 + vref_tol / 100)).toFixed(6)} V</strong><br>`;
-            result += `<br>`;
+            result += `<strong>Minimum Vout: ${minTempVout.toFixed(6)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${maxTempVout.toFixed(6)} V</strong><br><br>`;
+            
+            result += `<strong>Output Voltage Variations due to Vref Tolerance:</strong><br>`;
+            result += `Vref tolerance: ${vref_tol}%<br>`;
+            const vout_vref_min = voutActual * (1 - vref_tol / 100);
+            const vout_vref_max = voutActual * (1 + vref_tol / 100);
+            result += `<strong>Minimum Vout: ${vout_vref_min.toFixed(4)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${vout_vref_max.toFixed(4)} V</strong><br><br>`;
             
             // Combined variations
             const allVouts = [];
