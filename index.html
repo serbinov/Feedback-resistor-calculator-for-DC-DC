@@ -1014,7 +1014,11 @@
             
             result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
             if (r2Series) result += ` <span class="standard-value">(${r2Series} series)</span>`;
-            result += `<br><br>`;
+            result += `<br>`;
+            result += `<hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">`;
+            
+            result += `<strong>Detailed calculations including factors affecting the output voltage:</strong><br>`;
+            result += `Below are detailed calculations considering factors: resistor tolerance, temperature, Vref tolerance.<br><br>`;
             
             // Tolerance variations
             const tol_r1 = r1Series === 'E96' ? 0.01 : 0.05;
