@@ -1065,8 +1065,8 @@
             const minTempVout = Math.min(...tempVouts);
             const maxTempVout = Math.max(...tempVouts);
             result += `Including Vref tolerance (${vref_tol}%):<br>`;
-            result += `<strong>Minimum Vout: ${(minTempVout * (1 - vref_tol / 100)).toFixed(4)} V</strong><br>`;
-            result += `<strong>Maximum Vout: ${(maxTempVout * (1 + vref_tol / 100)).toFixed(4)} V</strong><br>`;
+            result += `<strong>Minimum Vout: ${(minTempVout * (1 - vref_tol / 100)).toFixed(6)} V</strong><br>`;
+            result += `<strong>Maximum Vout: ${(maxTempVout * (1 + vref_tol / 100)).toFixed(6)} V</strong><br>`;
             result += `<br>`;
             
             // Combined variations
