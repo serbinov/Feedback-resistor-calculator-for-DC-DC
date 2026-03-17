@@ -275,6 +275,61 @@
             flex-wrap: wrap;
         }
 
+        .unified-form {
+            display: block;
+        }
+
+        .card.unified-form {
+            display: block;
+        }
+
+        .unified-form .input-row {
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 16px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .unified-form .input-row label {
+            flex: 1 1 auto;
+            width: auto;
+            margin-bottom: 0;
+        }
+
+        .unified-form .input-row .input-with-unit,
+        .unified-form .input-row>select {
+            width: 260px;
+            max-width: 260px;
+            flex: 0 0 260px;
+            margin-left: auto;
+        }
+
+        .unified-form #topology {
+            transform: translateX(-1cm);
+        }
+
+        .unified-form #resistor_tolerance {
+            transform: translateX(-3cm);
+        }
+
+        .unified-form .input-with-unit input {
+            flex: 0 0 93px;
+            width: 93px;
+            min-width: 0;
+        }
+
+        .unified-form .input-with-unit .unit {
+            flex: 0 0 56px;
+            width: 56px;
+            text-align: left;
+        }
+
+        .unified-form .input-row .input-with-unit {
+            transform: translateX(-5mm);
+        }
+
         .input-row label {
             display: block;
             font-weight: 500;
@@ -480,6 +535,33 @@
         /* Base styles (mobile) are already handled above. Mobile view stacking vertically is default. */
         @media (max-width: 479px) {
 
+            .unified-form .input-row {
+                flex-wrap: nowrap;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .unified-form .input-row label {
+                width: 40%;
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+
+            .unified-form .input-row .input-with-unit,
+            .unified-form .input-row>select {
+                width: auto;
+                flex: 1;
+                transform: none;
+            }
+
+            #resistor_tolerance {
+                transform: none;
+                width: auto;
+                flex: 1;
+                min-width: 0;
+                margin-left: 0;
+            }
+
             .input-row input,
             .input-row select,
             .input-with-unit input {
@@ -528,19 +610,57 @@
             .input-with-unit {
                 width: auto;
                 flex: 1;
+                transform: none;
+            }
+
+            .range-row {
+                flex-wrap: nowrap;
             }
 
             .range-row label {
-                width: 100%;
-                margin-bottom: 8px;
+                width: 35%;
+                margin-bottom: 0;
+                flex-shrink: 0;
             }
 
             .range-inputs {
-                width: 100%;
+                flex: 1;
+                width: auto;
             }
 
             #resistor_tolerance {
                 flex: 1;
+            }
+
+            .unified-form {
+                display: block;
+            }
+
+            .unified-form .input-row {
+                flex-direction: row;
+                align-items: center;
+                margin-bottom: 14px;
+            }
+
+            .unified-form .input-row label {
+                width: 50%;
+                margin-bottom: 0;
+            }
+
+            .unified-form .input-row input,
+            .unified-form .input-row select {
+                width: 100%;
+            }
+
+            .unified-form .input-with-unit {
+                width: 50%;
+                flex: 0 0 50%;
+            }
+
+            .unified-form .tabs,
+            .unified-form .tab-content,
+            .unified-form button {
+                width: 100%;
             }
         }
 
@@ -561,6 +681,22 @@
                 gap: 0 24px;
                 /* Row gap handled by input-row margin, column gap 24px */
                 align-items: start;
+            }
+
+            .card.unified-form {
+                display: block;
+                grid-template-columns: none;
+                gap: 0;
+            }
+
+            .unified-form .input-row {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .unified-form .input-row label {
+                width: auto;
+                margin-bottom: 0;
             }
 
             /* Elements that should span full width of the card */
@@ -644,14 +780,12 @@
 
 <body>
     <main class="main-container">
-        <h1>Feedback Resistor Calculator</h1>
+        <h1>Calculator for step−down DC/DC converter</h1>
 
-        <div class="description">
-            <strong>About:</strong> This calculator helps you determine optimal feedback resistor values (R1 and R2) for
-            DC/DC converter circuits. The feedback network creates a voltage divider that sets the output voltage
-            according to the formula: <strong>V<sub>out</sub> = V<sub>ref</sub> × (1 + R1/R2)</strong>. Choose from
-            automatic selection with standard resistor values, specify one known resistor, or manually enter both
-            values.
+        <div class="description" style="margin-bottom:18px;">
+            This tool computes optimal component values for a buck (step-down) switching regulator.
+            Enter input/output voltages, load current and switching frequency, and the calculator
+            will suggest feedback resistors, inductor value, and recommended output/input capacitance.
         </div>
 
         <div class="calculator-grid">
@@ -660,54 +794,67 @@
                     title="Feedback resistor circuit showing R1 (upper) and R2 (lower) configuration">
             </div>
 
-            <div class="card">
+            <div class="card unified-form">
+                <!-- ═══ Converter Parameters ═══ -->
+                <div style="grid-column:1/-1;margin:0 0 8px 0;font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.07em;padding-bottom:5px;border-bottom:2px solid var(--border-color);">Converter Parameters</div>
+
+
                 <div class="input-row">
-                    <label for="vref">Reference Voltage (Vref/FB)</label>
-                    <div class="input-with-unit move-left">
+                    <label for="vin">Input Voltage (V<sub>in</sub>)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="vin" step="0.1" value="12" min="0.1">
+                        <span class="unit">V</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <label for="vout">Output Voltage (V<sub>out</sub>)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="vout" step="0.001" value="5" min="0.1" max="50">
+                        <span class="unit">V</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <label for="iout">Load Current (I<sub>out</sub>)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="iout" step="1" value="1000" min="1">
+                        <span class="unit">mA</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <label for="fsw">Switching Frequency (f<sub>sw</sub>)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="fsw" step="1" value="300" min="1">
+                        <span class="unit">kHz</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <label for="vripple">Max Output Ripple (ΔVout)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="vripple" step="1" value="50" min="1">
+                        <span class="unit">mV</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <label for="vref">Reference Voltage (V<sub>ref</sub>)</label>
+                    <div class="input-with-unit">
                         <input type="number" id="vref" step="0.001" value="0.6" min="0.1" max="10">
                         <span class="unit">V</span>
                     </div>
                 </div>
 
-                <div class="input-row">
-                    <label for="vref_tol">Vref Tolerance (%)</label>
-                    <div class="input-with-unit move-left">
-                        <input type="number" id="vref_tol" step="0.1" value="0.1" min="0" max="10">
-                        <span class="unit">%</span>
-                    </div>
-                </div>
-
-                <div class="input-row">
-                    <label for="vout_desired">Output Voltage</label>
-                    <div class="input-with-unit move-left">
-                        <input type="number" id="vout_desired" step="0.001" value="3.3" min="0.1" max="50">
-                        <span class="unit">V</span>
-                    </div>
-                </div>
 
                 <div class="input-row">
                     <label for="resistor_tolerance">Resistor Series</label>
-                    <select id="resistor_tolerance" class="move-left">
+                    <select id="resistor_tolerance">
                         <option value="1">1% (E96 series)</option>
                         <option value="5">5% (E24 series)</option>
                         <option value="both">5%, 1% (E24, E96)</option>
                     </select>
-                </div>
-
-                <div class="input-row">
-                    <label for="ppm_r1">PPM for R1 (upper)</label>
-                    <div class="input-with-unit move-left">
-                        <input type="number" id="ppm_r1" step="1" value="100" min="0" max="1000">
-                        <span class="unit">PPM</span>
-                    </div>
-                </div>
-
-                <div class="input-row">
-                    <label for="ppm_r2">PPM for R2 (lower)</label>
-                    <div class="input-with-unit move-left">
-                        <input type="number" id="ppm_r2" step="1" value="100" min="0" max="1000">
-                        <span class="unit">PPM</span>
-                    </div>
                 </div>
 
                 <div class="tabs">
@@ -717,20 +864,7 @@
                 </div>
 
                 <div id="auto-tab" class="tab-content active">
-                    <div class="input-row range-row">
-                        <label>Resistor Range</label>
-                        <div class="range-inputs">
-                            <div class="input-with-unit">
-                                <input type="number" id="min_resistor" step="0.1" value="1" placeholder="Min">
-                                <span class="unit">kΩ</span>
-                            </div>
-                            <span class="range-separator">to</span>
-                            <div class="input-with-unit">
-                                <input type="number" id="max_resistor" step="0.1" value="100" placeholder="Max">
-                                <span class="unit">kΩ</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Resistor range is fixed at 1–250 kΩ (no user input) -->
                 </div>
 
                 <div id="single-tab" class="tab-content">
@@ -767,12 +901,15 @@
                     </div>
                 </div>
 
-                <button onclick="calculateResistors()">Calculate</button>
+                <button onclick="calculateAll()" style="grid-column:1/-1;">Calculate</button>
 
             </div> <!-- end of form card -->
 
             <div class="result-wrapper">
-                <div id="resistor_result" class="result" style="margin-top:0;"></div>
+                <div id="topology_hint"></div>
+                <div id="calc_result_summary" class="result" style="margin-top:12px;"></div>
+                <div id="calc_result_resistors" class="result" style="margin-top:0;"></div>
+                <div id="calc_result_lc" class="result" style="margin-top:12px;"></div>
             </div>
         </div> <!-- end of calculator-grid -->
 
@@ -982,48 +1119,50 @@
                 return recommendations.length > 0 ? recommendations : ['Contact manufacturer for custom solution'];
             }
 
-            function calculateResistors() {
-                const vref = parseFloat(document.getElementById('vref').value.replace(',', '.'));
-                const voutDesired = parseFloat(document.getElementById('vout_desired').value.replace(',', '.'));
+            function calculateResistors(lcData = null) {
+                const vref = parseFloat(document.getElementById('vref').value.replace(',', '.')) || 0.6;
+                const voutDesired = parseFloat(document.getElementById('vout').value.replace(',', '.'));
                 const tolerance = document.getElementById('resistor_tolerance').value; // '1', '5', or 'both'
+                const resultEl = document.getElementById('calc_result_resistors');
                 let toleranceText;
-                let vref_tol = 0.1;
                 if (tolerance === '1') toleranceText = "1% (E96 series)";
                 else if (tolerance === '5') toleranceText = "5% (E24 series)";
                 else toleranceText = "E96 + E24 (choose best)";
 
                 if (isNaN(vref) || isNaN(voutDesired)) {
-                    document.getElementById('resistor_result').innerHTML =
+                    resultEl.innerHTML =
                         '<span class="error">Please enter valid voltage values</span>';
-                    return;
+                    return null;
                 }
 
                 if (voutDesired <= vref) {
-                    document.getElementById('resistor_result').innerHTML =
+                    resultEl.innerHTML =
                         '<span class="error">Output voltage must be greater than reference voltage</span>';
-                    return;
+                    return null;
                 }
 
                 let r1, r2, r1Series = null, r2Series = null;
+                let bestCandidates = null;
                 const targetRatio = (voutDesired / vref) - 1;
                 const activeTab = document.querySelector('.tab.active').getAttribute('onclick').replace("showTab('", "").replace("')", "");
 
                 if (activeTab === 'auto') {
-                    const minR = parseFloat(document.getElementById('min_resistor').value.replace(',', '.')) * 1000;
-                    const maxR = parseFloat(document.getElementById('max_resistor').value.replace(',', '.')) * 1000;
-
-                    if (isNaN(minR) || isNaN(maxR) || minR >= maxR || minR <= 0 || maxR <= 0) {
-                        document.getElementById('resistor_result').innerHTML =
-                            '<span class="error">Please enter valid resistor range</span>';
-                        return;
-                    }
+                    // Fixed resistor range: 1 kΩ ... 250 kΩ
+                    const minR = 1_000;
+                    const maxR = 250_000;
 
                     const seriesList = [];
                     if (tolerance === '1') seriesList.push({ arr: E96, name: 'E96' });
                     else if (tolerance === '5') seriesList.push({ arr: E24, name: 'E24' });
                     else { seriesList.push({ arr: E96, name: 'E96' }); seriesList.push({ arr: E24, name: 'E24' }); }
 
-                    let bestR1 = 0, bestR2 = 0, bestR1Series = null, bestR2Series = null, minError = Infinity;
+                    // Collect top 3 resistor pairs with smallest output error
+                    bestCandidates = [];
+                    function addCandidate(candidate) {
+                        bestCandidates.push(candidate);
+                        bestCandidates.sort((a, b) => a.error - b.error);
+                        if (bestCandidates.length > 3) bestCandidates.pop();
+                    }
 
                     for (let decade = Math.pow(10, Math.floor(Math.log10(minR))); decade <= maxR * 10; decade *= 10) {
                         for (const seriesObj of seriesList) {
@@ -1038,36 +1177,45 @@
                                 const actualVout = vref * (1 + r1StdObj.value / r2Candidate);
                                 const error = Math.abs(actualVout - voutDesired);
 
-                                if (error < minError) {
-                                    minError = error;
-                                    bestR1 = r1StdObj.value;
-                                    bestR1Series = r1StdObj.series;
-                                    bestR2 = r2Candidate;
-                                    bestR2Series = seriesObj.name;
-                                }
+                                addCandidate({
+                                    r1: r1StdObj.value,
+                                    r2: r2Candidate,
+                                    r1Series: r1StdObj.series,
+                                    r2Series: seriesObj.name,
+                                    vout: actualVout,
+                                    error
+                                });
                             }
                         }
                     }
 
-                    if (bestR1 === 0 || bestR2 === 0) {
-                        document.getElementById('resistor_result').innerHTML =
+                    if (bestCandidates.length === 0) {
+                        resultEl.innerHTML =
                             '<span class="error">Could not find resistors within specified range</span>';
-                        return;
+                        return null;
                     }
 
-                    r1 = bestR1;
-                    r2 = bestR2;
-                    r1Series = bestR1Series;
-                    r2Series = bestR2Series;
+                    // Choose the middle-value candidate (by R1) among the top 3 closest-to-target options
+                    const top3 = bestCandidates.slice(0, 3);
+                    const sortedByR1 = [...top3].sort((a, b) => a.r1 - b.r1);
+                    const best = sortedByR1[Math.floor((sortedByR1.length - 1) / 2)];
+
+                    r1 = best.r1;
+                    r2 = best.r2;
+                    r1Series = best.r1Series;
+                    r2Series = best.r2Series;
+
+                    // Store the candidate list for display
+                    bestCandidates.forEach((c, idx) => c.rank = idx + 1);
                 }
                 else if (activeTab === 'single') {
                     const knownPos = document.getElementById('known_resistor_pos').value;
                     const knownValue = parseFloat(document.getElementById('known_resistor_value').value.replace(',', '.')) * 1000;
 
                     if (isNaN(knownValue) || knownValue <= 0) {
-                        document.getElementById('resistor_result').innerHTML =
+                        resultEl.innerHTML =
                             '<span class="error">Please enter valid resistor value</span>';
-                        return;
+                        return null;
                     }
 
                     if (knownPos === 'r1') {
@@ -1093,9 +1241,9 @@
                     r2 = parseFloat(document.getElementById('r2_manual').value.replace(',', '.')) * 1000;
 
                     if (isNaN(r1) || isNaN(r2) || r1 <= 0 || r2 <= 0) {
-                        document.getElementById('resistor_result').innerHTML =
+                        resultEl.innerHTML =
                             '<span class="error">Please enter valid resistor values</span>';
-                        return;
+                        return null;
                     }
 
                     r1Series = getSeriesForValue(r1 / 1000, tolerance);
@@ -1119,195 +1267,793 @@
                 const powerR2 = Math.pow(dividerCurrent, 2) * r2; // W
                 const totalPower = powerR1 + powerR2; // W
 
-                let result = `<div class="success-box"><strong>Results:</strong><br><br>`;
-                result += `<strong>Target V<sub>out</sub>:</strong> ${voutDesired.toFixed(3)} V<br>`;
-                result += `<strong>Actual V<sub>out</sub>:</strong> ${voutActual.toFixed(3)} V (error ${error.toFixed(2)}%)<br><br>`;
+                // Removed short confirmation block to avoid duplicate messages
+                resultEl.innerHTML = '';
+                // Previously this function updated the compact summary directly which caused
+                // duplicate output when calculateAll() also writes the summary. Leave summary
+                // rendering to calculateAll() to avoid duplication.
 
-                result += `<strong>R1 (upper):</strong> ${formatResistorValue(r1)}`;
-                if (r1Series) result += ` <span class="standard-value">(${r1Series} series)</span>`;
-                result += `<br>`;
-
-                result += `<strong>R2 (lower):</strong> ${formatResistorValue(r2)}`;
-                if (r2Series) result += ` <span class="standard-value">(${r2Series} series)</span>`;
-                result += `<br>`;
-                result += `<hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">`;
-
-                result += `<strong>Detailed calculations including factors affecting the output voltage:</strong><br>`;
-                result += `Below are detailed calculations considering factors: resistor tolerance, temperature, Vref tolerance.<br><br>`;
-
-                // Tolerance variations
-                const tol_r1 = r1Series === 'E96' ? 0.01 : 0.05;
-                const tol_r2 = r2Series === 'E96' ? 0.01 : 0.05;
-                result += `<strong>Output Voltage Variations due to Resistor Tolerance:</strong><br>`;
-                result += `These are the possible output voltages considering the tolerance of the resistors. All combinations of minimum and maximum values for R1 and R2 are shown.<br>`;
-                result += `R1 tolerance: ${(tol_r1 * 100).toFixed(0)}%, R2 tolerance: ${(tol_r2 * 100).toFixed(0)}%<br>`;
-                const r1_min = r1 * (1 - tol_r1);
-                const r1_max = r1 * (1 + tol_r1);
-                const r2_min = r2 * (1 - tol_r2);
-                const r2_max = r2 * (1 + tol_r2);
-                const vout_min_min = vref * (1 + r1_min / r2_min);
-                const vout_min_max = vref * (1 + r1_min / r2_max);
-                const vout_max_min = vref * (1 + r1_max / r2_min);
-                const vout_max_max = vref * (1 + r1_max / r2_max);
-                result += `Vout (R1 min, R2 min): ${vout_min_min.toFixed(3)} V<br>`;
-                result += `Vout (R1 min, R2 max): ${vout_min_max.toFixed(3)} V<br>`;
-                result += `Vout (R1 max, R2 min): ${vout_max_min.toFixed(3)} V<br>`;
-                result += `Vout (R1 max, R2 max): ${vout_max_max.toFixed(3)} V<br>`;
-                result += `<strong>Minimum Vout: ${Math.min(vout_min_min, vout_min_max, vout_max_min, vout_max_max).toFixed(3)} V</strong><br>`;
-                result += `<strong>Maximum Vout: ${Math.max(vout_min_min, vout_min_max, vout_max_min, vout_max_max).toFixed(3)} V</strong><br><br>`;
-
-                // Temperature variations
-                const ppm_r1 = parseFloat(document.getElementById('ppm_r1').value.replace(',', '.')) || 100;
-                const ppm_r2 = parseFloat(document.getElementById('ppm_r2').value.replace(',', '.')) || 100;
-                vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
-                result += `<strong>Output Voltage Variations due to Temperature:</strong><br>`;
-                result += `These show how the output voltage changes with temperature, assuming R1 has ${ppm_r1} PPM/°C and R2 has ${ppm_r2} PPM/°C, with nominal temperature of 25°C.<br>`;
-                const temperatures = [-40, 0, 25, 85];
-                let tempVouts = [];
-                for (const t of temperatures) {
-                    const deltaT = t - 25;
-                    const r1_temp = r1 * (1 + (ppm_r1 / 1e6) * deltaT);
-                    const r2_temp = r2 * (1 + (ppm_r2 / 1e6) * deltaT);
-                    const vout_temp = vref * (1 + r1_temp / r2_temp);
-                    result += `Vout at ${t}°C: ${vout_temp.toFixed(6)} V<br>`;
-                    tempVouts.push(vout_temp);
-                }
-                const minTempVout = Math.min(...tempVouts);
-                const maxTempVout = Math.max(...tempVouts);
-                result += `<strong>Minimum Vout: ${minTempVout.toFixed(6)} V</strong><br>`;
-                result += `<strong>Maximum Vout: ${maxTempVout.toFixed(6)} V</strong><br><br>`;
-
-                result += `<strong>Output Voltage Variations due to Vref Tolerance:</strong><br>`;
-                result += `Vref tolerance: ${vref_tol}%<br>`;
-                const vout_vref_min = voutActual * (1 - vref_tol / 100);
-                const vout_vref_max = voutActual * (1 + vref_tol / 100);
-                result += `<strong>Minimum Vout: ${vout_vref_min.toFixed(4)} V</strong><br>`;
-                result += `<strong>Maximum Vout: ${vout_vref_max.toFixed(4)} V</strong><br><br>`;
-
-                // Combined variations
-                const allVouts = [];
-                for (const t of temperatures) {
-                    const deltaT = t - 25;
-                    const r1_temp = r1 * (1 + (ppm_r1 / 1e6) * deltaT);
-                    const r2_temp = r2 * (1 + (ppm_r2 / 1e6) * deltaT);
-                    const r1_min_temp = r1_temp * (1 - tol_r1);
-                    const r1_max_temp = r1_temp * (1 + tol_r1);
-                    const r2_min_temp = r2_temp * (1 - tol_r2);
-                    const r2_max_temp = r2_temp * (1 + tol_r2);
-                    const vouts_temp = [
-                        vref * (1 + r1_min_temp / r2_min_temp),
-                        vref * (1 + r1_min_temp / r2_max_temp),
-                        vref * (1 + r1_max_temp / r2_min_temp),
-                        vref * (1 + r1_max_temp / r2_max_temp)
-                    ];
-                    allVouts.push(...vouts_temp);
-                }
-                const globalMinVout = Math.min(...allVouts);
-                const globalMaxVout = Math.max(...allVouts);
-                vref_tol = parseFloat(document.getElementById('vref_tol').value.replace(',', '.')) || 0.1;
-                const globalMinVout_corrected = globalMinVout * (1 - vref_tol / 100);
-                const globalMaxVout_corrected = globalMaxVout * (1 + vref_tol / 100);
-                const deltaVout = globalMaxVout_corrected - globalMinVout_corrected;
-                const percentDelta = (deltaVout / voutDesired) * 100;
-                result += `<strong>Combined Variations (Tolerance + Temperature + Vref ${vref_tol}%):</strong><br>`;
-                result += `Worst-case variations considering resistor tolerance, temperature, and Vref tolerance effects across all combinations.<br>`;
-                result += `<strong>Minimum Vout:</strong> <strong>${globalMinVout_corrected.toFixed(4)} V</strong><br>`;
-                result += `<strong>Maximum Vout:</strong> <strong>${globalMaxVout_corrected.toFixed(4)} V</strong><br>`;
-                result += `<strong>Delta Vout:</strong> <strong>${deltaVout.toFixed(4)} V</strong><br>`;
-                result += `<strong>Deviation from Target ${voutDesired.toFixed(3)} V:</strong> <strong>±${(percentDelta / 2).toFixed(2)}%</strong><br><br>`;
-
-                result += `<hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">`;
-
-                result += `<strong>Divider Current:</strong> ${formatCurrent(dividerCurrent)}<br>`;
-                result += `<strong>Power R1:</strong> ${formatPower(powerR1)}<br>`;
-                result += `<strong>Power R2:</strong> ${formatPower(powerR2)}<br>`;
-                result += `<strong>Total Power:</strong> ${formatPower(totalPower)}<br><br>`;
-
-                // Рекомендации по мощности резисторов
-                const recommendedPowerR1 = getRecommendedPowerRating(powerR1);
-                const recommendedPowerR2 = getRecommendedPowerRating(powerR2);
-
-                result += `<strong>Recommended Power Ratings:</strong><br>`;
-                result += `<strong>R1:</strong> ${recommendedPowerR1} resistor<br>`;
-                result += `<strong>R2:</strong> ${recommendedPowerR2} resistor<br><br>`;
-
-                // Рекомендации по корпусам резисторов
-                const voltageDropR1 = dividerCurrent * r1;
-                const voltageDropR2 = dividerCurrent * r2;
-                const packageR1 = getRecommendedPackageSize(recommendedPowerR1, voltageDropR1, r1);
-                const packageR2 = getRecommendedPackageSize(recommendedPowerR2, voltageDropR2, r2);
-
-                result += `<strong>Recommended Package Sizes:</strong> (minimal size with 2.5x power margin)<br>`;
-                result += `<strong>R1 packages:</strong><br>`;
-                packageR1.forEach(pkg => {
-                    result += `&nbsp;&nbsp;• ${pkg}<br>`;
-                });
-                result += `<strong>R2 packages:</strong><br>`;
-                packageR2.forEach(pkg => {
-                    result += `&nbsp;&nbsp;• ${pkg}<br>`;
-                });
-                result += `</div>`;
-
-                document.getElementById('resistor_result').innerHTML = result;
+                return {
+                    ok: true,
+                    voutTarget: voutDesired,
+                    voutActual,
+                    errorPercent: error,
+                    r1,
+                    r2,
+                    r1Series,
+                    r2Series,
+                    tolerance: tolerance,
+                    dividerCurrent,
+                    powerR1,
+                    powerR2,
+                    totalPower,
+                    bestCandidates: bestCandidates || []
+                };
             }
         </script>
 
-        <!-- Technical Reference -->
-        <div class="tech-reference"
-            style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 0 0 20px 0; font-size: 12px; color: #666; text-align: center;">
-            <h4 style="margin: 0 0 15px 0; color: #010912; font-size: 15px;">Resistor Specifications & Package Info</h4>
+        <script>
+            // ── Standard E12 inductor/capacitor values ────────────────────────
+            const E12_STD = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
 
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-bottom: 20px;">
-                <div style="text-align: left;">
-                    <strong style="color: #495057;">SMD Packages:</strong>
-                    <div style="font-family: 'Courier New', monospace; line-height: 1.4; margin-top: 4px;">
-                        <strong>0201:</strong> 50mW/15V (max. 50V)<br>
-                        <strong>0402:</strong> 62.5mW/50V (max. 100V)<br>
-                        <strong>0603:</strong> 100mW/50V (max. 100V)<br>
-                        <strong>0805:</strong> 125mW/150V (max. 200V)<br>
-                        <strong>1206:</strong> 250mW/200V (max. 400V)<br>
-                        <strong>1210:</strong> 500mW/200V (max. 400V)<br>
-                        <strong>2010:</strong> 750mW/200V (max. 400V)<br>
-                        <strong>2512:</strong> 1W/200V (max. 400V)
-                    </div>
-                </div>
-                <div style="text-align: left;">
-                    <strong style="color: #495057;">Through-hole Packages:</strong>
-                    <div style="font-family: 'Courier New', monospace; line-height: 1.4; margin-top: 4px;">
-                        <strong>1/4W:</strong> 250mW/500V (Axial Ø2.3×6mm)<br>
-                        <strong>1/2W:</strong> 500mW/500V (Axial Ø3.2×9mm)<br>
-                        <strong>1W:</strong> 1W/500V (Axial Ø3.6×10mm)<br>
-                        <strong>2W:</strong> 2W/500V (Axial Ø5×12mm)<br>
-                        <strong>5W:</strong> 5W/500V (Axial Ø7×16mm)
-                    </div>
-                </div>
-            </div>
+            // Check whether a nominal value (µF) belongs to the E12 series
+            function isE12Nominal(uF) {
+                if (!isFinite(uF) || uF <= 0) return false;
+                const exp = Math.floor(Math.log10(uF));
+                const norm = uF / Math.pow(10, exp);
+                // Allow tiny numerical tolerance
+                for (const v of E12_STD) {
+                    if (Math.abs(norm - v) < 1e-6) return true;
+                }
+                return false;
+            }
 
-            <hr style="border: none; border-top: 1px solid #dee2e6; margin: 15px 0;">
+            // SMD ceramic capacitor library (nominal µF, ratedV, dielectric, package optional)
+            // Limited to X5R/X7R entries per user request; ESR values are approximate guidance.
+            const SMD_CAP_TABLE = [
+                { c_uF: 1, ratedV: 6.3, dielectric: 'X5R', pkg: '0402', esr: 0.025, price_usd_100: 0.55, brand: 'Samsung', pn: 'CL05A105KQ5NNNC', min_qty: 100, unit_price_usd: 0.0018 },
+                { c_uF: 1, ratedV: 10, dielectric: 'X5R', pkg: '0402', esr: 0.025, price_usd_100: 0.0022, brand: 'Samsung', pn: 'CL05A105KP5NNNC', min_qty: 100, unit_price_usd: 0.0022 },
+                { c_uF: 1, ratedV: 10, dielectric: 'X5R', pkg: '0402', esr: 0.030, price_usd_100: 0.60, brand: 'Samsung', pn: 'CL05A105KP8NNNC', min_qty: 100, unit_price_usd: 0.0030 },
+                { c_uF: 1, ratedV: 16, dielectric: 'X5R', pkg: '0402', esr: 0.025, price_usd_100: 0.0026, brand: 'Samsung', pn: 'CL05A105KO8NNNC', min_qty: 100, unit_price_usd: 0.0054 },
+                { c_uF: 1, ratedV: 25, dielectric: 'X5R', pkg: '0402', esr: 0.025, price_usd_100: 0.0041, brand: 'Samsung', pn: 'CL05A105KA5NQNC', min_qty: 100, unit_price_usd: 0.0041 },
+                { c_uF: 2.2, ratedV: 6.3, dielectric: 'X5R', pkg: '0402', esr: 0.018, price_usd_100: 0.90, brand: 'Samsung', pn: 'CL05A225KQ5NNNC', min_qty: 100, unit_price_usd: 0.0090 },
+                { c_uF: 2.2, ratedV: 10, dielectric: 'X5R', pkg: '0402', esr: 0.018, price_usd_100: 0.65, brand: 'Samsung', pn: 'CL05A225KQJNNNC', min_qty: 100, unit_price_usd: 0.0037 },
+                { c_uF: 10, ratedV: 6.3, dielectric: 'X5R', pkg: '0402', esr: 0.015, price_usd_100: 0.0056, brand: 'Samsung', pn: 'CL05A106MQ5NUNC', min_qty: 100, unit_price_usd: 0.0056 },
+                { c_uF: 10, ratedV: 10, dielectric: 'X5R', pkg: '0402', esr: 0.015, price_usd_100: 0.0091, brand: 'Samsung', pn: 'CL05A106MP5NUNC', min_qty: 20, unit_price_usd: 0.0091 },
 
-            <h4 style="margin: 0 0 10px 0; color: #010912; font-size: 14px;">DC/DC Design Guidelines</h4>
-            <div style="display: inline-block; text-align: left; max-width: 600px; line-height: 1.5;">
-                <ul style="margin: 0; padding-left: 20px;">
-                    <li style="margin-bottom: 6px;"><strong>Resistor Values:</strong> Lower values (1kΩ-10kΩ) improve
-                        noise immunity but increase quiescent current, reducing light-load efficiency. Higher values
-                        (100kΩ+) improve efficiency but are susceptible to PCB leakage and noise coupling.</li>
-                    <li style="margin-bottom: 6px;"><strong>Feedforward Capacitor (C<sub>ff</sub>):</strong> Often added
-                        in parallel with R1 to improve phase margin and transient response. Typical values range from
-                        10pF to 100pF depending on the crossover frequency.</li>
-                    <li style="margin-bottom: 6px;"><strong>Layout (PCB):</strong> Place R1 and R2 as close to the FB
-                        pin as possible. Keep the FB trace very short to minimize noise pickup, and route it away from
-                        the switch node (SW) and inductor.</li>
-                </ul>
-            </div>
+                { c_uF: 1, ratedV: 6.3, dielectric: 'X5R', pkg: '0603', esr: 0.018, price_usd_100: 0.50, brand: 'Samsung', pn: 'CL10A105KQ5NNNC', min_qty: 100, unit_price_usd: 0.0050 },
+                { c_uF: 1, ratedV: 10, dielectric: 'X7R', pkg: '0603', esr: 0.014, price_usd_100: 0.60, brand: 'Samsung', pn: 'CL10B105KP8NNNC', min_qty: 50, unit_price_usd: 0.006 },
+                { c_uF: 1, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.020, price_usd_100: 0.0054, brand: 'Samsung', pn: 'CL10B105KO8NNNC', min_qty: 100, unit_price_usd: 0.0054 },
+                { c_uF: 1, ratedV: 25, dielectric: 'X7R', pkg: '0603', esr: 0.020, price_usd_100: 0.0064, brand: 'Samsung', pn: 'CL10B105KA8NNNC', min_qty: 50, unit_price_usd: 0.0064 },
+                { c_uF: 1, ratedV: 50, dielectric: 'X5R', pkg: '0603', esr: 0.025, price_usd_100: 0.0072, brand: 'Samsung', pn: 'CL10A105KB8NNNC', min_qty: 50, unit_price_usd: 0.0072 },
+                { c_uF: 1.2, ratedV: 10, dielectric: 'X7R', pkg: '0603', esr: 0.013, price_usd_100: 0.62, brand: 'Samsung', pn: 'CL10A125MQ5NNNC', min_qty: 100, unit_price_usd: 0.0056 },
+                { c_uF: 1.5, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.012, price_usd_100: 0.95, brand: 'Samsung', pn: 'CL10A155MQ5NNNC', min_qty: 100, unit_price_usd: 0.0095 },
+                { c_uF: 2.2, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.0105, price_usd_100: 0.75, brand: 'Samsung', pn: 'CL10A225KO8NNNC', min_qty: 50, unit_price_usd: 0.0062 },
+                { c_uF: 2.2, ratedV: 25, dielectric: 'X7R', pkg: '0603', esr: 0.012, price_usd_100: 1.10, brand: 'Samsung', pn: 'CL10A225KO5NNNC', min_qty: 100, unit_price_usd: 0.0110 },
+                { c_uF: 2.7, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.0100, price_usd_100: 0.78, brand: 'Samsung', pn: 'CL10A275MQ5NNNC', min_qty: 100, unit_price_usd: 0.0078 },
+                { c_uF: 3.3, ratedV: 10, dielectric: 'X7R', pkg: '0603', esr: 0.015, price_usd_100: 0.95, brand: 'Murata', pn: 'GRM188R61A335KE15D', min_qty: 100, unit_price_usd: 0.0095 },
+                { c_uF: 3.3, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.013, price_usd_100: 1.30, brand: 'Samsung', pn: 'CL10B335KQJNNNC', min_qty: 50, unit_price_usd: 0.0130 },
+                { c_uF: 4.7, ratedV: 10, dielectric: 'X5R', pkg: '0603', esr: 0.010, price_usd_100: 0.0056, brand: 'Samsung', pn: 'CL10A475KP8NNNC', min_qty: 50, unit_price_usd: 0.0056 },
+                { c_uF: 4.7, ratedV: 10, dielectric: 'X7R', pkg: '0603', esr: 0.0135, price_usd_100: 1.15, brand: 'Samsung', pn: 'CL10B475KP8NNNC', min_qty: 50, unit_price_usd: 0.0115 },
+                { c_uF: 4.7, ratedV: 16, dielectric: 'X5R', pkg: '0603', esr: 0.010, price_usd_100: 0.0103, brand: 'Samsung', pn: 'CL10A475KO8NNNC', min_qty: 10, unit_price_usd: 0.0103 },
+                { c_uF: 4.7, ratedV: 16, dielectric: 'X7R', pkg: '0603', esr: 0.011, price_usd_100: 1.60, brand: 'Samsung', pn: 'CL10B475KP8NNNC', min_qty: 50, unit_price_usd: 0.0160 },
+                { c_uF: 10, ratedV: 10, dielectric: 'X5R', pkg: '0603', esr: 0.008, price_usd_100: 0.0065, brand: 'Samsung', pn: 'CL10A106KP8NNNC', min_qty: 50, unit_price_usd: 0.0065 },
+                { c_uF: 10, ratedV: 10, dielectric: 'X5R', pkg: '0603', esr: 0.009, price_usd_100: 2.40, brand: 'Samsung', pn: 'CL10A106KAHNNNE', min_qty: 20, unit_price_usd: 0.0240 },
+                { c_uF: 10, ratedV: 25, dielectric: 'X5R', pkg: '0603', esr: 0.008, price_usd_100: 0.0176, brand: 'Samsung', pn: 'CL10A106MA8NRNC', min_qty: 20, unit_price_usd: 0.0176 },
+                { c_uF: 22, ratedV: 10, dielectric: 'X5R', pkg: '0603', esr: 0.005, price_usd_100: 0.0141, brand: 'Samsung', pn: 'CL10A226MP8NUNE', min_qty: 10, unit_price_usd: 0.0141 },
 
-            <div style="font-size: 12px; color: #16a34a; font-weight: 600; margin-top: 15px;">
-                ⚡ Safety Factor: Calculator recommends 2.5x power margin for reliability
-            </div>
+                { c_uF: 1, ratedV: 50, dielectric: 'X7R', pkg: '0805', esr: 0.030, price_usd_100: 0.0128, brand: 'Samsung', pn: 'CL21B105KBFNNNE', min_qty: 20, unit_price_usd: 0.0128 },
+                { c_uF: 3.3, ratedV: 16, dielectric: 'X7R', pkg: '0805', esr: 0.0090, price_usd_100: 3.20, brand: 'Samsung', pn: 'CL21B335KOQVPNE', min_qty: 1, unit_price_usd: 0.0832 },
+                { c_uF: 3.9, ratedV: 16, dielectric: 'X7R', pkg: '0805', esr: 0.0088, price_usd_100: 3.00, brand: 'Samsung', pn: 'CL21A395KQHNNNC', min_qty: 100, unit_price_usd: 0.0300 },
+                { c_uF: 4.7, ratedV: 16, dielectric: 'X7R', pkg: '0805', esr: 0.0085, price_usd_100: 3.50, brand: 'Samsung', pn: 'CL21B475KOFNNNE', min_qty: 10, unit_price_usd: 0.0236 },
+                { c_uF: 4.7, ratedV: 25, dielectric: 'X5R', pkg: '0805', esr: 0.008, price_usd_100: 0.0144, brand: 'Samsung', pn: 'CL21A475KAQNNNE', min_qty: 20, unit_price_usd: 0.0144 },
+                { c_uF: 4.7, ratedV: 50, dielectric: 'X5R', pkg: '0805', esr: 0.008, price_usd_100: 0.0205, brand: 'Samsung', pn: 'CL21A475KBQNNNE', min_qty: 10, unit_price_usd: 0.0205 },
+                { c_uF: 5.6, ratedV: 16, dielectric: 'X7R', pkg: '0805', esr: 0.0080, price_usd_100: 3.30, brand: 'Samsung', pn: 'CL21A566KQHNNNC', min_qty: 50, unit_price_usd: 0.0280 },
+                { c_uF: 6.8, ratedV: 25, dielectric: 'X7R', pkg: '0805', esr: 0.0075, price_usd_100: 2.80, brand: 'Samsung', pn: 'CL21A686KQHNNNC', min_qty: 50, unit_price_usd: 0.0350 },
+                { c_uF: 8.2, ratedV: 25, dielectric: 'X7R', pkg: '0805', esr: 0.0070, price_usd_100: 2.40, brand: 'Murata', pn: 'GRM21BR61E825KE15L', min_qty: 50, unit_price_usd: 0.0300 },
+                { c_uF: 10, ratedV: 25, dielectric: 'X5R', pkg: '0805', esr: 0.008, price_usd_100: 0.0204, brand: 'Samsung', pn: 'CL21A106KAYNNNE', min_qty: 20, unit_price_usd: 0.0204 },
+                { c_uF: 10, ratedV: 50, dielectric: 'X5R', pkg: '0805', esr: 0.008, price_usd_100: 0.0661, brand: 'muRata', pn: 'GRM21BR61H106KE43L', min_qty: 10, unit_price_usd: 0.0661 },
+                { c_uF: 10, ratedV: 50, dielectric: 'X5R', pkg: '0805', esr: 0.010, price_usd_100: 0.0467, brand: 'Samsung', pn: 'CL21A106KBYQNNE', min_qty: 5, unit_price_usd: 0.0467 },
+                { c_uF: 22, ratedV: 25, dielectric: 'X5R', pkg: '0805', esr: 0.005, price_usd_100: 0.0302, brand: 'Samsung', pn: 'CL21A226MAYNNNE', min_qty: 10, unit_price_usd: 0.0302 },
 
-            <div style="font-size: 11px; margin-top: 6px; font-style: italic; color: #94a3b8;">
-                *Working voltage/Maximum voltage ratings based on industry standards
-            </div>
-        </div>
+                { c_uF: 4.7, ratedV: 50, dielectric: 'X7R', pkg: '1206', esr: 0.015, price_usd_100: 0.0389, brand: 'Samsung', pn: 'CL31B475KBHNNNE', min_qty: 10, unit_price_usd: 0.0389 },
+                { c_uF: 10, ratedV: 16, dielectric: 'X5R', pkg: '1206', esr: 0.009, price_usd_100: 2.40, brand: 'Samsung', pn: 'CL31A106KAHNNNE', min_qty: 20, unit_price_usd: 0.0349 },
+                { c_uF: 10, ratedV: 25, dielectric: 'X7R', pkg: '1206', esr: 0.0065, price_usd_100: 5.00, brand: 'Samsung', pn: 'CL31B106KAHNNNE', min_qty: 20, unit_price_usd: 0.0349 },
+                { c_uF: 10, ratedV: 50, dielectric: 'X7R', pkg: '1206', esr: 0.012, price_usd_100: 0.0591, brand: 'Samsung', pn: 'CL31B106KBHNNNE', min_qty: 10, unit_price_usd: 0.0591 },
+                { c_uF: 12, ratedV: 25, dielectric: 'X7R', pkg: '1206', esr: 0.0060, price_usd_100: 4.70, brand: 'Murata', pn: 'GRM31CR61E122KA01L', min_qty: 50, unit_price_usd: 0.0450 },
+                { c_uF: 15, ratedV: 25, dielectric: 'X7R', pkg: '1206', esr: 0.0058, price_usd_100: 4.30, brand: 'Samsung', pn: 'CL31A156KAHNNNE', min_qty: 20, unit_price_usd: 0.0600 },
+                { c_uF: 18, ratedV: 35, dielectric: 'X7R', pkg: '1206', esr: 0.0055, price_usd_100: 4.80, brand: 'TDK', pn: 'C3216X7R1V185K160AB', min_qty: 20, unit_price_usd: 0.0550 },
+                { c_uF: 22, ratedV: 25, dielectric: 'X5R', pkg: '1206', esr: 0.0052, price_usd_100: 4.90, brand: 'Samsung', pn: 'CL31A226KAHNNNE', min_qty: 20, unit_price_usd: 0.0475 },
+                { c_uF: 100, ratedV: 6.3, dielectric: 'X5R', pkg: '1206', esr: 0.005, price_usd_100: 0.0610, brand: 'Samsung', pn: 'CL31A107MQHNNNE', min_qty: 10, unit_price_usd: 0.0610 },
+
+                { c_uF: 22, ratedV: 25, dielectric: 'X7R', pkg: '1210', esr: 0.010, price_usd_100: 0.1274, brand: 'Samsung', pn: 'CL32B226KAJNNNE', min_qty: 1, unit_price_usd: 0.1274 },
+
+                { c_uF: 22, ratedV: 25, dielectric: 'X5R', pkg: '2220', esr: 0.0068, price_usd_100: 3.90, brand: 'Samsung', pn: 'CL21X226KAHNNNE', min_qty: 200, unit_price_usd: 0.0475 },
+
+                { c_uF: 27, ratedV: 35, dielectric: 'X5R', pkg: '3225', esr: 0.0050, price_usd_100: 5.60, brand: 'Samsung', pn: 'CL32A276KAHNNNE', min_qty: 50, unit_price_usd: 0.0560 },
+                { c_uF: 33, ratedV: 35, dielectric: 'X5R', pkg: '3225', esr: 0.0048, price_usd_100: 5.40, brand: 'Samsung', pn: 'CL32A336KAHNNNE', min_qty: 50, unit_price_usd: 0.0590 },
+                { c_uF: 39, ratedV: 50, dielectric: 'X5R', pkg: '3225', esr: 0.0045, price_usd_100: 6.20, brand: 'Murata', pn: 'GRT32A3R9A506ME11', min_qty: 50, unit_price_usd: 0.0700 },
+                { c_uF: 47, ratedV: 50, dielectric: 'X5R', pkg: '3225', esr: 0.0040, price_usd_100: 3.80, brand: 'Samsung', pn: 'CL32B476KAHNNNE', min_qty: 200, unit_price_usd: 0.1200 },
+                { c_uF: 56, ratedV: 25, dielectric: 'X5R', pkg: '3225', esr: 0.0038, price_usd_100: 7.50, brand: 'Samsung', pn: 'CL32B566KAHNNNE', min_qty: 200, unit_price_usd: 0.3000 },
+                { c_uF: 68, ratedV: 25, dielectric: 'X5R', pkg: '3225', esr: 0.0035, price_usd_100: 8.00, brand: 'Murata', pn: 'GRT32A686M25E1', min_qty: 200, unit_price_usd: 0.3500 },
+
+                { c_uF: 82, ratedV: 25, dielectric: 'X5R', pkg: '3312', esr: 0.0032, price_usd_100: 9.00, brand: 'Samsung', pn: 'CL33A826KAHNNNE', min_qty: 200, unit_price_usd: 0.4500 },
+                { c_uF: 100, ratedV: 25, dielectric: 'X5R', pkg: '3312', esr: 0.0030, price_usd_100: 10.00, brand: 'Samsung', pn: 'CL33A106KAHNNNE', min_qty: 200, unit_price_usd: 0.6000 }
+            ];
+
+            // Ensure every trimmed table entry has vendor fields present
+            SMD_CAP_TABLE.forEach(entry => {
+                if (!('brand' in entry)) entry.brand = '';
+                if (!('pn' in entry)) entry.pn = '';
+                if (!('unit_price_usd' in entry)) entry.unit_price_usd = null;
+                if (!('min_qty' in entry)) entry.min_qty = null;
+            });
+
+            // Sort table by package (pkg) then by nominal capacitance (c_uF) and ratedV
+            SMD_CAP_TABLE.sort((a, b) => {
+                const pa = (a.pkg || '').toString();
+                const pb = (b.pkg || '').toString();
+                if (pa < pb) return -1;
+                if (pa > pb) return 1;
+                if ((a.c_uF || 0) < (b.c_uF || 0)) return -1;
+                if ((a.c_uF || 0) > (b.c_uF || 0)) return 1;
+                return (a.ratedV || 0) - (b.ratedV || 0);
+            });
+
+            /** Return the next standard E12 value >= val (in any unit, e.g. µH or µF) */
+            function lcNextStd(val) {
+                if (val <= 0) return 0;
+                const exp = Math.floor(Math.log10(val));
+                for (let decade = Math.pow(10, exp - 1); decade <= val * 100; decade *= 10) {
+                    for (const v of E12_STD) {
+                        const candidate = v * decade;
+                        if (candidate >= val * 0.9999) return candidate;
+                    }
+                }
+                return val; // fallback
+            }
+
+            function lcFmtL(uH) {
+                if (uH >= 1000) return `${(uH / 1000).toFixed(3)} mH`;
+                if (uH >= 1)    return `${uH.toFixed(3)} µH`;
+                return `${(uH * 1000).toFixed(2)} nH`;
+            }
+            function lcFmtC(uF) {
+                // Always present capacitance in µF for values >= 1 (user preference)
+                if (uF >= 1)     return _trimNumberString(uF.toFixed(3)) + ' µF';
+                if (uF >= 0.001) return _trimNumberString((uF * 1000).toFixed(2)) + ' nF';
+                return _trimNumberString((uF * 1e6).toFixed(1)) + ' pF';
+            }
+            function _trimNumberString(s) {
+                // remove trailing zeros and trailing dot
+                return s.replace(/\.0+$|(?<=[0-9])0+$/g, '').replace(/\.$/, '');
+            }
+            function lcFmtShortL(uH) {
+                if (uH >= 1000) return _trimNumberString((uH / 1000).toFixed(3)) + ' mH';
+                if (uH >= 1)    return _trimNumberString(uH.toFixed(3)) + ' µH';
+                return _trimNumberString((uH * 1000).toFixed(2)) + ' nH';
+            }
+            function lcFmtShortC(uF) {
+                // Short format but still prefer µF for readability
+                if (uF >= 1)     return `${Math.round(uF)} µF`;
+                if (uF >= 0.001) return _trimNumberString((uF * 1000).toFixed(2)) + ' nF';
+                return _trimNumberString((uF * 1e6).toFixed(1)) + ' pF';
+            }
+
+            function highlight(value) {
+                return `<span style="color: var(--primary); font-weight: 700;">${value}</span>`;
+            }
+            function lcFmtESR(ohm) {
+                if (ohm >= 1)     return `${ohm.toFixed(3)} Ω`;
+                if (ohm >= 0.001) {
+                    const mOhm = Math.round(ohm * 1000);
+                    return `${mOhm} mΩ`;
+                }
+                return `${(ohm * 1e6).toFixed(1)} µΩ`;
+            }
+
+            function calculateAll() {
+                const summaryEl = document.getElementById('calc_result_summary');
+                summaryEl.innerHTML = '<div class="success-box">Running calculations…</div>';
+
+                let resistorData = null;
+                let lcData = null;
+                try {
+                    // Render resistor block first so user always sees resistor results if possible
+                    resistorData = calculateResistors(null);
+                    lcData = calculateLC();
+
+                    if (!resistorData && !lcData) {
+                        summaryEl.innerHTML = '<span class="error">Fix input errors to see summary. Detailed blocks below show what must be corrected.</span>';
+                        return;
+                    }
+                    
+                    // Show clear error messages if either calculation failed
+                    const resEl = document.getElementById('calc_result_resistors');
+                    const lcEl = document.getElementById('calc_result_lc');
+                    if (!resistorData && !lcData) {
+                        summaryEl.innerHTML = '<span class="error">Fix input errors to see summary. Detailed blocks below show what must be corrected.</span>';
+                        if (resEl) resEl.innerHTML = '<span class="error">Resistor calculation failed — check inputs.</span>';
+                        if (lcEl) lcEl.innerHTML = '<span class="error">L/C calculation failed — check inputs.</span>';
+                        return;
+                    }
+                    if (!resistorData) {
+                        if (resEl) resEl.innerHTML = '<span class="error">Resistor calculation failed — check inputs.</span>';
+                    }
+                    if (!lcData) {
+                        if (lcEl) lcEl.innerHTML = '<span class="error">L/C calculation failed — check inputs.</span>';
+                    }
+                    // rest of function continues below (unchanged)
+                } catch (err) {
+                    console.error('calculateAll error', err);
+                    summaryEl.innerHTML = `<span class="error">Calculation error: ${String(err)}</span>`;
+                    const resEl = document.getElementById('calc_result_resistors');
+                    if (resEl) resEl.innerHTML = `<span class="error">Internal error during calculations: ${String(err)}</span>`;
+                    return;
+                }
+
+                function extractStandardSeriesInfo(value) {
+                    if (value <= 0) return { base: 0, exponent: 0 };
+                    const exp = Math.floor(Math.log10(value));
+                    const base = value / Math.pow(10, exp);
+                    return { base: +base.toFixed(2), exponent: exp };
+                }
+
+                // Guard LC-based formatting when lcData is missing
+                let Lstd = '';
+                let Cstd = '';
+                let Cnominal = '';
+                let LstdInfo = { base: 0, exponent: 0 };
+                let CstdInfo = { base: 0, exponent: 0 };
+                if (lcData) {
+                    Lstd = lcFmtL(lcData.Lstd_uH);
+                    Cstd = lcFmtC(lcData.Cstd_uF);
+                    LstdInfo = extractStandardSeriesInfo(lcData.Lstd_uH);
+                    CstdInfo = extractStandardSeriesInfo(lcData.Cstd_uF);
+                    Cnominal = lcFmtC(lcData.C_nominal_uF);
+                }
+
+                // User-requested compact summary format (single, styled header)
+                let summary = '';
+                summary += `<div class="success-box">`;
+                summary += `<div style="font-size:18px;font-weight:800;color:var(--primary);margin-bottom:6px;">Calculated values</div>`;
+                // resistor-only fallback will be added later if LC data is not present
+                if (lcData) {
+                    // extract calculation parameters returned from calculateLC()
+                    const calcParams = lcData.calc_params || {};
+                    const capVoltageDerating_ui = calcParams.capVoltageDerating || 0.5;
+                    const inductorMargin = calcParams.inductorMargin || 1.3;
+                    const lossBudgetPct = calcParams.lossBudgetPct || 1.0;
+                    const esrMult = 1.0; // Use ESR data from the selected capacitor when available
+
+                    // show compact values (trim trailing zeros)
+                    const Lshort = lcFmtShortL(lcData.Lstd_uH);
+                    const Cshort = lcFmtShortC(lcData.Cstd_uF);
+
+                    // Detailed single-line styled summary with colored highlights
+                    const selL = lcData.Lstd_uH;
+                    const selC = lcData.Cstd_uF;
+                    const predicted_dVout_mV = lcData.dVoutCalc_mV != null ? lcData.dVoutCalc_mV : 0;
+                    const IL_rms = lcData.ILrms || 0;
+                    const IL_peak = lcData.ILpeak || 0;
+                    const Vout_val = resistorData && resistorData.voutActual ? resistorData.voutActual : parseFloat(document.getElementById('vout').value);
+                    const Iout_val = lcData.Iout || 0;
+                    const Pout = Vout_val * Iout_val; // W
+
+                    const IsatRec = IL_peak ? (IL_peak * inductorMargin) : null;
+                    const IratedRec = IL_rms ? (IL_rms * inductorMargin) : null;
+                    let DCR_max_val = null;
+                    let DCR_max_str = 'N/A';
+                    if (IL_rms > 0 && Pout > 0) {
+                        const Ploss_allow = (lossBudgetPct / 100) * Pout;
+                        DCR_max_val = Ploss_allow / (IL_rms * IL_rms);
+                        DCR_max_str = lcFmtESR(DCR_max_val);
+                    }
+
+                    // Build results exactly in requested format
+                    const lines = [];
+                    lines.push(`Target Vout: ${highlight(resistorData.voutTarget.toFixed(3))} V`);
+                    lines.push(`Actual Vout: ${highlight(resistorData.voutActual.toFixed(3))} V (error ${highlight(resistorData.errorPercent.toFixed(2) + '%')})`);
+                    lines.push('');
+                    lines.push(`Cin: ${highlight(lcFmtShortC(lcData.Cin_min_uF))} (ESR ≤ ${highlight(lcFmtESR(lcData.ESRmax || 0))})`);
+                    lines.push('');
+                    const tolText = resistorData.tolerance === '1' ? '1%' : resistorData.tolerance === '5' ? '5%' : '1%/5%';
+                    lines.push(`R1 (upper): ${highlight(formatResistorValue(resistorData.r1))} ${tolText} (${resistorData.r1Series || ''})`);
+                    lines.push(`R2 (lower): ${highlight(formatResistorValue(resistorData.r2))} ${tolText} (${resistorData.r2Series || ''})`);
+                    lines.push('');
+                    lines.push(`L1: ${highlight(lcFmtShortL(selL))}, (I_sat ≥ ${highlight(IsatRec ? IsatRec.toFixed(2) + ' A' : 'N/A')} , DCR ≤ ${highlight(DCR_max_str)})`);
+                    lines.push('');
+                    lines.push(`Cout: ${highlight(lcFmtShortC(lcData.C_nominal_uF))} (ESR ≤ ${highlight(lcFmtESR(lcData.ESRmax || 0))})`);
+                    lines.push('');
+                    lines.push(`Output Ripple (ΔVout) (L=${highlight(lcFmtShortL(selL))}, C=${highlight(lcFmtShortC(lcData.C_nominal_uF))}): ${highlight(predicted_dVout_mV.toFixed(1) + ' mV')}`);
+                    lines.push('');
+                    const displayRipple_mV = (calcParams && calcParams.targetRipple_mV != null) ? calcParams.targetRipple_mV : 50;
+                    lines.push(`*Max output ripple amplitude: ΔVout = ${displayRipple_mV.toFixed(0)} mV;`);
+                    lines.push('*Inductor current ripple ratio: ΔI = 30%;');
+                    lines.push('*Inductor saturation current margin: Margin = 1.3;');
+                    lines.push('*Power loss budget: Loss budget = 2%.');
+                    lines.push('<span style="color:red;">*Ceramic caps typically lose capacitance at operating voltage; use higher nominal C to compensate.</span>');
+                    lines.push('');
+
+                    summary += `<pre style="font-size:15px;color:var(--text-main);font-family:inherit;white-space:pre-wrap;line-height:1.4;">${lines.join('\n')}</pre>`;
+                }
+
+                // If LC data was not available, but resistor results exist, show a compact resistor-only block
+                if (!lcData && resistorData) {
+                    summary += `<div style="font-size:13px;color:var(--text-muted);margin-top:6px;">Target Vout: <span style="color:var(--primary);font-weight:700;">${resistorData.voutTarget.toFixed(3)} V</span> — Actual: <span style="color:var(--success-text);font-weight:700;">${resistorData.voutActual.toFixed(3)} V</span> (error ${resistorData.errorPercent.toFixed(2)}%)</div>`;
+                    summary += `<div style="font-size:13px;color:var(--text-muted);">R1: <span style="color:var(--primary);font-weight:700;">${formatResistorValue(resistorData.r1)}</span> ${resistorData.r1Series ? `<span style="color:var(--text-muted)">(${resistorData.r1Series})</span>` : ''} — R2: <span style="color:var(--primary);font-weight:700;">${formatResistorValue(resistorData.r2)}</span> ${resistorData.r2Series ? `<span style="color:var(--text-muted)">(${resistorData.r2Series})</span>` : ''}</div>`;
+                }
+
+                // Advanced lists removed for brevity per user request
+
+                summary += `</div>`;
+
+                summaryEl.innerHTML = summary;
+            }
+
+            function calculateLC() {
+                const topology        = 'buck';
+                const Vin             = parseFloat(document.getElementById('vin').value);
+                const Vout            = parseFloat(document.getElementById('vout').value);
+                const Iout_mA         = parseFloat(document.getElementById('iout').value);
+                const Iout            = Iout_mA / 1000;
+                const ripple_pct      = 30;      // fixed ±30% inductor ripple
+                const vripple_mV      = parseFloat(document.getElementById('vripple').value);
+                const fsw_kHz         = parseFloat(document.getElementById('fsw').value);
+
+                // Cap selection defaults: we will choose from SMD_CAP_TABLE using each part's dielectric and ratedV
+                const capSafetyFactor = 1.0;      // do not inflate required capacitance
+                const lossBudgetPct   = 2.0;      // default 2% loss budget
+                const inductorMargin  = 1.3;      // fixed margin (1.3×)
+                const vref            = 0.6;      // fixed controller reference voltage (for resistor calc)
+                const ratedV_min      = 1.5 * Vout; // Cout rated V should be 50-200% above Vout
+                const ratedV_max      = 3.0 * Vout;
+                const dielectricMinFraction = { 'X7R': 0.5, 'X5R': 0.5, 'C0G': 1.0, 'Y5V': 0.25 };
+                let capVoltageDerating = 0.5;
+                const resultEl        = document.getElementById('calc_result_lc');
+
+                // ── Validation ───────────────────────────────────────────────
+                if ([Vin, Vout, Iout_mA, vripple_mV, fsw_kHz].some(v => isNaN(v) || v <= 0)) {
+                    resultEl.innerHTML = '<span class="error">Please fill in all fields with valid positive values.</span>';
+                    return null;
+                }
+                if (topology === 'buck' && Vout >= Vin) {
+                    resultEl.innerHTML = '<span class="error">Buck converter: V<sub>out</sub> must be less than V<sub>in</sub>.</span>';
+                    return null;
+                }
+                if (topology === 'boost' && Vout <= Vin) {
+                    resultEl.innerHTML = '<span class="error">Boost converter: V<sub>out</sub> must be greater than V<sub>in</sub>.</span>';
+                    return null;
+                }
+
+                const fsw          = fsw_kHz * 1e3;          // Hz
+                const ripple_k     = ripple_pct / 100;        // unitless
+                const dVout        = vripple_mV / 1000; // V (Input in mV)
+
+                // ── Core calculations ─────────────────────────────────────────
+                let D, IL_avg, dIL, L_min_H, Cout_min_F, Cin_min_F, I_cap_rms, ESR_max, ESR_typical_value;
+
+                if (topology === 'buck') {
+                    D          = Vout / Vin;
+                    IL_avg     = Iout;
+
+                    // Calculate minimum output capacitance based on allowed ripple (ΔVout)
+                    // using standard formula: ΔVout = ΔIL / (8·fsw·Cout)
+                    dIL        = ripple_k * IL_avg;
+                    Cout_min_F = dIL / (8 * fsw * dVout);
+
+                    // Assume we will actually use 2× the minimum capacitance to keep ripple under budget
+                    const Cout_used_F = Cout_min_F * 2;
+
+                    // Recompute minimum inductor value based on the larger capacitance so that
+                    // output ripple stays within ΔVout even if the inductor is smaller.
+                    // L = Vout·(1 − D) / (8·fsw²·Cout_used·ΔVout)
+                    L_min_H    = Vout * (1 - D) / (8 * fsw * fsw * Cout_used_F * dVout);
+
+                    // Estimate minimum input capacitance (rough guidance) assuming ΔVin≈ΔVout
+                    Cin_min_F  = (Iout * D * (1 - D)) / (fsw * dVout);
+                    I_cap_rms  = dIL / (2 * Math.sqrt(3));
+                    ESR_max    = dVout / dIL;
+
+                    // Typical X5R/X7R ceramic ESR will be computed after we select a standard C value
+                }
+                else if (topology === 'boost') {
+                    D          = 1 - Vin / Vout;
+                    IL_avg     = Iout / (1 - D);                       // = Iout·Vout/Vin
+                    dIL        = ripple_k * IL_avg;
+                    L_min_H    = Vin * D / (fsw * dIL);
+                    Cout_min_F = Iout * D / (fsw * dVout);
+                    // Cap RMS: pulsed diode current plus triangular ripple
+                    I_cap_rms  = Math.sqrt(D * Iout * Iout / ((1 - D) * (1 - D)) + (1 - D) * dIL * dIL / 12);
+                    ESR_max    = dVout * (1 - D) / Iout;
+                }
+                else {  // buck-boost (inverting)
+                    D          = Vout / (Vin + Vout);
+                    IL_avg     = Iout / (1 - D);
+                    dIL        = ripple_k * IL_avg;
+                    L_min_H    = Vin * D / (fsw * dIL);
+                    Cout_min_F = Iout * D / (fsw * dVout);
+                    I_cap_rms  = Math.sqrt(D * Iout * Iout / ((1 - D) * (1 - D)) + (1 - D) * dIL * dIL / 12);
+                    ESR_max    = dVout * (1 - D) / Iout;
+                }
+
+                const IL_peak  = IL_avg + dIL / 2;
+                const IL_rms   = Math.sqrt(IL_avg * IL_avg + dIL * dIL / 12);
+
+                // ── Convert to µH and µF ──────────────────────────────────────
+                const L_min_uH   = L_min_H  * 1e6;
+                const C_min_uF   = Number.isFinite(Cout_min_F) ? Cout_min_F * 1e6 : 0;
+
+                // Adjust target ripple range; if calculated ripple is outside this range, we will
+                // increase capacitance and reduce inductance to bring ripple into bounds.
+                const rippleMin_mV = 0;
+                const rippleMax_mV = 50;
+
+                // Generate candidate L/C variants by scaling output capacitance
+                const variants = [];
+                for (let capScale = 2; capScale <= 6; capScale++) {
+                    const C_used_uF = C_min_uF * capScale;
+                    const C_used_F = C_used_uF * 1e-6;
+
+                    // Recompute Lmin based on the used capacitance (smaller L reduces ripple)
+                    // L = Vout·(1 − D) / (8·fsw²·Cout_used·ΔVout)
+                    const L_min_H_variant = Vout * (1 - D) / (8 * fsw * fsw * C_used_F * dVout);
+                    const L_min_uH_variant = L_min_H_variant * 1e6;
+
+                    // Choose nearest standard inductor value (preferring smaller for efficiency)
+                    const L_next_std_variant = lcNextStd(L_min_uH_variant);
+                    const L_candidates_uH_tmp = getLStdCandidates(L_min_uH_variant);
+                    let L_std_uH_variant = L_next_std_variant;
+                    if (L_candidates_uH_tmp && L_candidates_uH_tmp.length > 0) {
+                        L_std_uH_variant = L_candidates_uH_tmp[0] || L_next_std_variant;
+                    }
+
+                    // Estimate ripple using this chosen L and C
+                    const L_used_H = L_std_uH_variant * 1e-6;
+                    let dVout_calc_V_variant = 0;
+                    if (topology === 'buck') {
+                        const dIL_for_L = Vout * (1 - D) / (L_used_H * fsw);
+                        dVout_calc_V_variant = dIL_for_L / (8 * fsw * C_used_F);
+                    } else {
+                        dVout_calc_V_variant = Iout * D / (fsw * C_used_F);
+                    }
+
+                    variants.push({
+                        capScale,
+                        C_used_uF,
+                        L_min_uH_variant,
+                        L_std_uH_variant,
+                        dVout_calc_mV: dVout_calc_V_variant * 1000
+                    });
+                }
+
+                // Pick the best variant: prefer within ripple range, then closest to mid-range
+                const best = variants
+                    .map(v => {
+                        const within = v.dVout_calc_mV >= rippleMin_mV && v.dVout_calc_mV <= rippleMax_mV;
+                        const midError = Math.abs(v.dVout_calc_mV - (rippleMin_mV + rippleMax_mV) / 2);
+                        return { ...v, within, midError };
+                    })
+                    .sort((a, b) => {
+                        if (a.within !== b.within) return a.within ? -1 : 1;
+                        if (a.midError !== b.midError) return a.midError - b.midError;
+                        return a.capScale - b.capScale;
+                    })[0];
+
+                // Use selected variant values for reporting and downstream selection
+                const selectedVariant = best || variants[0];
+                let C_used_uF = selectedVariant.C_used_uF;
+                let C_used_F = C_used_uF * 1e-6;
+                let selected_L_std_uH = selectedVariant.L_std_uH_variant; // will be adjusted if desired
+                let dVout_calc_V = selectedVariant.dVout_calc_mV / 1000;
+
+                // If output capacitance is too small, iteratively increase it (+5uF) and shrink L (÷3)
+                // until we land close to 22, 44, 60, or 100 µF, or we reach a reasonable upper bound.
+                const targets = [22, 44, 60, 100];
+                const isCloseTarget = (val) => targets.some(t => Math.abs(val - t) <= 2);
+                while (C_used_uF < 100 && !isCloseTarget(C_used_uF)) {
+                    C_used_uF += 5;
+                    C_used_F = C_used_uF * 1e-6;
+                    selected_L_std_uH = selected_L_std_uH / 3;
+
+                    const L_used_H = selected_L_std_uH * 1e-6;
+                    if (topology === 'buck') {
+                        const dIL_for_L = Vout * (1 - D) / (L_used_H * fsw);
+                        dVout_calc_V = dIL_for_L / (8 * fsw * C_used_F);
+                    } else {
+                        dVout_calc_V = Iout * D / (fsw * C_used_F);
+                    }
+
+                    // stop if ripple is inside desired range
+                    if (dVout_calc_V * 1000 >= rippleMin_mV && dVout_calc_V * 1000 <= rippleMax_mV) break;
+                }
+
+                const predicted_dVout_mV = dVout_calc_V * 1000;
+
+                // Ceramic capacitors lose capacitance under DC bias (voltage), so choose a larger nominal value.
+                // Typical derating: 40-60%. We assume 50% effective capacitance at operating voltage (overridden by UI selection).
+                // Compute nominal required capacitance before selecting standard value
+                // We'll adjust for DC-bias based on dielectric and rated voltage later
+                const C_nominal_uF = C_used_uF * capSafetyFactor;
+
+                // Find standard L/C values. Prefer a smaller inductor nominal when possible.
+                const L_next_std = lcNextStd(L_min_uH);
+                const C_std_uF   = lcNextStd(C_nominal_uF);
+
+                // Prefer a smaller E12 candidate for L (choose previous standard if available)
+                const L_candidates_uH_tmp = getLStdCandidates(L_min_uH);
+                if (L_candidates_uH_tmp && L_candidates_uH_tmp.length > 0) {
+                    // candidates are [prev, curr, next] when available — pick the smaller (prev) to reduce DCR losses
+                    selected_L_std_uH = L_candidates_uH_tmp[0] || L_next_std;
+                }
+
+                // Estimate actual ripple using the chosen standard L and 2×Cmin output capacitance
+                const L_used_H = (selected_L_std_uH || L_min_uH) * 1e-6;
+                if (topology === 'buck') {
+                    const dIL_for_L = Vout * (1 - D) / (L_used_H * fsw);
+                    dVout_calc_V = dIL_for_L / (8 * fsw * C_used_F);
+                } else {
+                    // boost / buck-boost ripple approximation
+                    dVout_calc_V = Iout * D / (fsw * C_used_F);
+                }
+
+                // Typical ceramic ESR estimate (simple heuristic) adjusted by dielectric
+                // Estimate a baseline ESR for the chosen standard capacitor value (for warning purposes only)
+                ESR_typical_value = Math.max(0.0005, (0.02 * 10 / (C_std_uF || 1)));
+
+                // Analyse different inductor choices (mid-range selection) and required output capacitance
+                function getLStdCandidates(value_uH) {
+                    if (!value_uH || value_uH <= 0) return [];
+                    const exp = Math.floor(Math.log10(value_uH));
+                    const base = value_uH / Math.pow(10, exp);
+                    let idx = E12_STD.findIndex(v => v >= base);
+                    let expAdj = exp;
+                    if (idx === -1) {
+                        // above highest base, move to next exponent
+                        expAdj = exp + 1;
+                        idx = 0;
+                    }
+                    const candidates = [];
+                    if (idx > 0) candidates.push(E12_STD[idx - 1] * Math.pow(10, expAdj));
+                    candidates.push(E12_STD[idx] * Math.pow(10, expAdj));
+                    if (idx + 1 < E12_STD.length) candidates.push(E12_STD[idx + 1] * Math.pow(10, expAdj));
+                    return candidates;
+                }
+
+                function computeRequiredCForL(L_uH) {
+                    const L_H = L_uH * 1e-6;
+                    let dIL;
+                    if (topology === 'buck') {
+                        dIL = Vout * (1 - D) / (L_H * fsw);
+                    } else {
+                        // For boost/buckboost, Cout requirement is not directly tied to L in this simple model.
+                        return C_min_uF;
+                    }
+                    if (dVout <= 0) return C_min_uF;
+                    const C_req = dIL / (8 * fsw * dVout);
+                    return C_req * 1e6; // to µF
+                }
+
+                const L_candidates_uH = getLStdCandidates(selected_L_std_uH);
+                const L_candidates = L_candidates_uH.map(l => ({
+                    L_uH: l,
+                    C_required_uF: computeRequiredCForL(l)
+                }));
+
+                function getCStdCandidates(value_uF) {
+                    if (!value_uF || value_uF <= 0) return [];
+                    const exp = Math.floor(Math.log10(value_uF));
+                    const base = value_uF / Math.pow(10, exp);
+                    let idx = E12_STD.findIndex(v => v >= base);
+                    let expAdj = exp;
+                    if (idx === -1) {
+                        expAdj = exp + 1;
+                        idx = 0;
+                    }
+                    const candidates = [];
+                    if (idx > 0) candidates.push(E12_STD[idx - 1] * Math.pow(10, expAdj));
+                    candidates.push(E12_STD[idx] * Math.pow(10, expAdj));
+                    if (idx + 1 < E12_STD.length) candidates.push(E12_STD[idx + 1] * Math.pow(10, expAdj));
+                    return candidates;
+                }
+
+                // Build candidate list from SMD_CAP_TABLE — filter to E12-compatible nominal values
+                const C_candidates = [];
+                const filteredParts = SMD_CAP_TABLE.filter(p => isE12Nominal(p.c_uF));
+                // Log any removed (non-E12) nominals for user visibility during dev
+                const removed = SMD_CAP_TABLE.filter(p => !isE12Nominal(p.c_uF));
+                if (removed.length > 0) console.log('Removed non-E12 cap nominals:', removed.map(x => x.c_uF));
+                for (const part of filteredParts) {
+                    // Skip dielectrics that are incompatible (user selected dielectric is a preference, but allow others)
+                    // Compute effective fraction based on rated voltage and dielectric
+                    const minFrac = dielectricMinFraction[part.dielectric] || 0.5;
+                    const appliedRatio = Math.min(1, Vout / Math.max(0.0001, part.ratedV));
+                    const effectiveFrac = minFrac + (1 - minFrac) * (1 - appliedRatio);
+                    const effective = part.c_uF * effectiveFrac;
+                    // Estimate ESR if not provided
+                    const esr_est = part.esr || Math.max(0.0005, esrMult * (0.02 * 10 / (part.c_uF || 1)));
+                    // How many of these parts needed in parallel to meet C_nominal_uF (after derating)
+                    const needed = effective > 0 ? Math.ceil((C_nominal_uF) / effective) : 999;
+                    // per-cap RMS current (approx) — will be refined later
+                    const per_cap_I_rms = I_cap_rms / Math.max(1, needed);
+                    // combined ESR when using 'needed' caps in parallel
+                    const total_esr = esr_est / Math.max(1, needed);
+                    // Mark whether the part meets the user's safety multiplier of Vout
+                    const meetsRated = (part.ratedV >= (capSafetyFactor * Vout));
+                    const ratedInRange = part.ratedV >= ratedV_min && part.ratedV <= ratedV_max;
+                    const total_eff = effective * needed;
+                    const inPreferredCapRange = total_eff >= (1.5 * C_nominal_uF) && total_eff <= (3.0 * C_nominal_uF);
+                    C_candidates.push({
+                        c_uF: part.c_uF,
+                        ratedV: part.ratedV,
+                        dielectric: part.dielectric,
+                        pkg: part.pkg,
+                        brand: part.brand || '',
+                        pn: part.pn || '',
+                        min_qty: part.min_qty || null,
+                        unit_price_usd: part.unit_price_usd != null ? part.unit_price_usd : (part.price_usd_100 ? part.price_usd_100 / 100 : null),
+                        price_usd_100: part.price_usd_100 || null,
+                        esr: esr_est,
+                        effective_uF: effective,
+                        effectiveFrac,
+                        needed_count: needed,
+                        total_effective_uF: total_eff,
+                        per_cap_I_rms,
+                        total_esr,
+                        meetsRated,
+                        ratedInRange,
+                        inPreferredCapRange
+                    });
+                }
+
+                // Filter and sort candidates: prefer caps that meet rated-voltage safety, fewer parts,
+                // then lower total ESR, matching dielectric, then smaller nominal value.
+                C_candidates.sort((a, b) => {
+                    if ((a.ratedInRange || false) !== (b.ratedInRange || false)) return (a.ratedInRange ? -1 : 1);
+                    if ((a.meetsRated || false) !== (b.meetsRated || false)) return (a.meetsRated ? -1 : 1);
+                    if (a.needed_count !== b.needed_count) return a.needed_count - b.needed_count;
+                    if (a.total_esr !== b.total_esr) return a.total_esr - b.total_esr;
+                    return a.c_uF - b.c_uF;
+                });
+
+                // --- Select the best (part, quantity) combination:
+                // For each part in C_candidates, evaluate n = 1, 2, 3 parallel units.
+                // Keep combos where total_effective >= C_nominal_uF (meets requirement).
+                // Among valid combos, pick cheapest total cost; tie-break by fewer parts, lower ESR.
+                // If no combo meets the requirement with <=3 parts, fall back to the closest match.
+                let selectedCap = null;
+                if (C_candidates.length > 0) {
+                    const scoreKey = (cand) => [
+                        cand.ratedInRange ? 0 : 1,
+                        cand.meetsC ? 0 : 1,
+                        cand.inPreferredCapRange ? 0 : 1,
+                        cand.total_cost_usd != null ? cand.total_cost_usd : 1e9,
+                        cand.needed_count,
+                        cand.total_esr
+                    ];
+                    const isBetter = (a, b) => {
+                        const ak = scoreKey(a), bk = scoreKey(b);
+                        for (let i = 0; i < ak.length; ++i) {
+                            if (ak[i] < bk[i]) return true;
+                            if (ak[i] > bk[i]) return false;
+                        }
+                        return false;
+                    };
+
+                    let best = null; // valid combo (meets C requirement with n<=3)
+                    let bestFallback = null; // closest combo if none meet requirement
+
+                    for (const c of C_candidates) {
+                        const eff_per = c.effective_uF || 0;
+                        if (eff_per <= 0) continue;
+                        const unit_price = (c.unit_price_usd != null) ? c.unit_price_usd
+                            : (c.price_usd_100 ? c.price_usd_100 / 100 : null);
+                        const meetsRatedPart = c.ratedV >= (capSafetyFactor * Vout);
+
+                        for (let n = 1; n <= 3; n++) {
+                            const total_eff = eff_per * n;
+                            const total_esr = (c.esr != null && c.esr > 0) ? (c.esr / n) : 0;
+                            const total_cost = unit_price != null ? unit_price * n : null;
+                            const relErr = C_nominal_uF > 0
+                                ? Math.abs(total_eff - C_nominal_uF) / C_nominal_uF : 0;
+                            const meetsC = total_eff >= C_nominal_uF;
+                            const inPreferredCapRange = total_eff >= (1.5 * C_nominal_uF) && total_eff <= (3.0 * C_nominal_uF);
+                            const ratedInRange = c.ratedInRange;
+
+                            const cand = Object.assign({}, c, {
+                                effective_uF: eff_per,
+                                needed_count: n,
+                                total_effective_uF: total_eff,
+                                total_esr,
+                                unit_price_usd: unit_price,
+                                total_cost_usd: total_cost,
+                                meetsRated: meetsRatedPart,
+                                ratedInRange,
+                                inPreferredCapRange,
+                                meetsC,
+                                relErr
+                            });
+
+                            if (meetsC) {
+                                if (!best || isBetter(cand, best)) best = cand;
+                            } else {
+                                // fallback: prefer closest to required C
+                                const fbKey = (x) => [x.meetsRated ? 0 : 1, x.relErr, x.total_cost_usd != null ? x.total_cost_usd : 1e9];
+                                if (!bestFallback || fbKey(cand)[1] < fbKey(bestFallback)[1]) bestFallback = cand;
+                            }
+                        }
+                    }
+
+                    const chosen = best || bestFallback || C_candidates[0];
+                    selectedCap = Object.assign({}, chosen);
+                    selectedCap.unit_price_usd = (selectedCap.unit_price_usd != null) ? selectedCap.unit_price_usd
+                        : (selectedCap.price_usd_100 ? (selectedCap.price_usd_100 / 100) : null);
+                    const perCapEsrV = selectedCap.esr != null ? selectedCap.esr : 0;
+                    const unitPriceV = selectedCap.unit_price_usd || null;
+                    // Build 1×, 2×, 3× variants of the chosen base part for UI comparison
+                    selectedCap.variants = [1, 2, 3].map(n => {
+                        const total_eff = (selectedCap.effective_uF || 0) * n;
+                        return {
+                            n,
+                            total_effective_uF: total_eff,
+                            total_esr: perCapEsrV > 0 ? perCapEsrV / n : 0,
+                            total_cost_usd: unitPriceV != null ? unitPriceV * n : null,
+                            meetsC: total_eff >= C_nominal_uF,
+                            inPreferredCapRange: total_eff >= (1.5 * C_nominal_uF) && total_eff <= (3.0 * C_nominal_uF)
+                        };
+                    });
+
+                    // Compute overall voltage derating ratio for the selected part
+                    if (selectedCap && selectedCap.c_uF && selectedCap.effective_uF) {
+                        capVoltageDerating = selectedCap.effective_uF / selectedCap.c_uF;
+                    }
+                }
+
+                // ── Warnings ─────────────────────────────────────────────────
+                const warnings = [];
+                if (D < 0.1) warnings.push(`⚠️ Very low duty cycle (D = ${(D * 100).toFixed(1)}%). Risk of discontinuous conduction mode (DCM) and high peak current.`);
+                if (D > 0.9) warnings.push(`⚠️ Very high duty cycle (D = ${(D * 100).toFixed(1)}%). Efficiency and gate-drive timing may be challenging.`);
+                if (ripple_pct > 50) warnings.push(`⚠️ Ripple factor ${ripple_pct}% is high. Verify CCM operation at minimum load current.`);
+                if (IL_peak > Iout * 4) warnings.push(`⚠️ Peak inductor current (${IL_peak.toFixed(2)} A) is very high — verify inductor saturation rating!`);
+
+                // Detailed LC HTML removed to avoid duplication with Summary.
+                // Keep calc_result_lc empty; all necessary LC info is shown in the Summary block.
+                document.getElementById('calc_result_lc').innerHTML = '';
+                const topologyName = { buck: 'Buck (Step-Down)', boost: 'Boost (Step-Up)', buckboost: 'Buck-Boost (Inverting)' }[topology];
+                return {
+                    ok: true,
+                    topologyName: topologyName,
+                    Iout_mA,
+                    Iout,
+                    D,
+                    Lmin_uH: L_min_uH,
+                    Cmin_uF: C_min_uF,
+                    Cin_min_uF: Cin_min_F * 1e6,
+                    Lstd_uH: selected_L_std_uH,
+                    Cstd_uF: C_std_uF,
+                    C_nominal_uF: C_nominal_uF,
+                    L_candidates: L_candidates,
+                    C_candidates: C_candidates,
+                    ILavg: IL_avg,
+                    ILrms: IL_rms,
+                    ILpeak: IL_peak,
+                    IcapRms: I_cap_rms,
+                    ESRmax: ESR_max,
+                    ESRtypical: ESR_typical_value,
+                    calc_params: {
+                        ripple_pct: ripple_pct,
+                        targetRipple_mV: vripple_mV,
+                        capVoltageDerating: capVoltageDerating,
+                        capSafetyFactor: capSafetyFactor,
+                        lossBudgetPct: lossBudgetPct,
+                        inductorMargin: inductorMargin
+                    },
+                    selectedCap: selectedCap,
+                    dVoutCalc_mV: dVout_calc_V * 1000
+                };
+            }
+        </script>
+
 
         <div class="contact-card"
             style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border: 1px solid #bae6fd; border-radius: 12px; padding: 24px; margin: 0 0 24px 0; font-size: 14px; color: #0f172a; text-align: center; box-shadow: 0 10px 15px -3px rgba(14,165,233,0.15);">
@@ -1413,7 +2159,7 @@
         <div class="developer-info">
             <div class="developer-name">Developed by Oleg Serbinov</div>
             <div>
-                <span style="font-weight:bold;">v1.0</span> • <span>2025-12-30</span>
+                <span style="font-weight:bold;">v1.0</span> • <span>2026-03-17</span>
             </div>
         </div>
     </main>

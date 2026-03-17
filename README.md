@@ -1,83 +1,90 @@
-# DC/DC Feedback Resistor Calculator
+# Buck Converter Feedback Resistor & Output Ripple Calculator
 
-**Online calculator for determining optimal feedback resistor values in DC/DC converter circuits**
+A lightweight, **mobile-friendly web calculator** for designing the feedback voltage divider and estimating output ripple for **step‑down (buck) DC/DC converters**.
 
-## 🔧 What it does
+It computes:
+- Optimal feedback resistors (R1/R2) based on standard E24/E96 values
+- Output voltage error relative to your target
+- Expected output ripple (ΔV) based on the selected output capacitor
 
-This web-based calculator helps engineers and electronics enthusiasts calculate the optimal feedback resistor values (R1 and R2) for DC/DC converter voltage divider networks. The tool automatically determines the resistor values needed to achieve a specific output voltage based on the reference voltage of your switching regulator.
+---
 
-## ⚡ Features
+## ✅ What It Does
 
-- **Auto Selection Mode**: Automatically finds the best resistor combination within a specified range
-- **Single Resistor Mode**: Calculate the unknown resistor when one value is already known
-- **Manual Input Mode**: Verify existing resistor combinations and see actual output voltage
-- **Standard Resistor Series**: Supports both E24 (5% tolerance) and E96 (1% tolerance) standard values
-- **Smart Value Display**: Automatically formats results in the most appropriate units (Ω, kΩ, MΩ)
-- **Mobile Responsive**: Works perfectly on all devices - desktop, tablet, and mobile
-- **Circuit Diagram**: Includes visual reference showing resistor placement
-- **Real-time Calculation**: Instant results with error percentage display
+This tool helps you choose resistor values for the feedback network of a buck converter (the R1/R2 divider that sets Vout). It also estimates output voltage ripple using a capacitor from the built-in capacitor database.
 
-## 🎯 Use Cases
+It is designed for one topology only: **step‑down (buck) converters**.
 
-- **Buck Converters** - Step-down DC/DC converters
-- **Boost Converters** - Step-up DC/DC converters  
-- **Linear Regulators** - Adjustable voltage regulators
-- **Switching Power Supplies** - SMPS feedback network design
-- **PWM Controllers** - Feedback loop design
-- **Power Electronics Projects** - Voltage setting and regulation
+---
 
-## 📐 Formula
+## ⚡ Key Features
 
-The calculator uses the standard voltage divider formula:
+- **Feedback resistor calculator** (R1/R2) for a given Vout and reference voltage (Vref)
+- **Standard resistor series support**: E24 (5%) and E96 (1%)
+- **Automatic best-match resistor selection** based on allowable error and resistor range
+- **Real-time output ripple estimate** using selected capacitor (Cout) and inductor current ripple
+- **Responsive UI**: Works on desktop and mobile
+- **Simple UI**: Single topology, single page, instant results
+
+---
+
+## 🧮 How to Use
+
+1. Enter your converter's **reference voltage (Vref)** (e.g., 0.8 V or 0.6 V)
+2. Enter your desired **output voltage (Vout)**
+3. Choose the **resistor tolerance series** (E24 / E96)
+4. Pick **output capacitor (Cout)** from the dropdown
+5. Optionally set a **maximum ripple voltage** target
+6. Review the calculated:
+   - R1/R2 resistor pair (and nearest standard values)
+   - Expected output voltage error
+   - Estimated output ripple voltage
+
+---
+
+## 🧾 Formula Used
+
+The feedback divider uses the standard formula:
+
 ```
 Vout = Vref × (1 + R1/R2)
 ```
 
-Where:
-- **Vout** - Desired output voltage
-- **Vref** - Reference voltage (feedback pin voltage)
-- **R1** - Upper resistor (between output and feedback pin)
-- **R2** - Lower resistor (between feedback pin and ground)
+And output ripple is estimated using: (simplified for buck operation)
 
-## 🚀 How to Use
+```
+ΔVout ≈ ΔI_L / (8 × Cout × f_sw)
+```
 
-1. **Enter Reference Voltage**: Input your DC/DC converter's reference voltage (typically 0.6V - 1.25V)
-2. **Set Target Output**: Specify your desired output voltage
-3. **Choose Resistor Tolerance**: Select 1% (E96) or 5% (E24) series
-4. **Select Calculation Mode**:
-   - **Auto Selection**: Enter min/max resistor range for automatic optimization
-   - **One Resistor**: Specify one known resistor value  
-   - **Manual Input**: Enter both resistor values to verify the design
-5. **Get Results**: View optimal resistor values with error percentage
+Where ΔI_L is the inductor ripple current.
 
-## 🌐 Live Demo
-
-**[Try the Calculator →](https://serbinov.github.io/Feedback-resistor-calculator-for-DC-DC/)**
-
-## 💻 Technical Details
-
-- **Pure HTML/CSS/JavaScript** - No dependencies, works offline
-- **Responsive Design** - Optimized for all screen sizes
-- **Standard Resistor Values** - Uses industry-standard E24 and E96 series
-- **Error Calculation** - Shows percentage deviation from target voltage
-- **Circuit Validation** - Prevents invalid input combinations
-
-## 🛠️ Applications
-
-Perfect for designing:
-- Switching regulators (Buck, Boost, Buck-Boost)
-- Linear voltage regulators (LM317, LM1117, etc.)
-- DC/DC converter modules
-- Power management circuits
-- Battery charging circuits
-- LED driver circuits
+---
 
 ## 📁 Files
 
-- `index.html` - Main calculator application (GitHub Pages entry point)
-- `Feedback resistor calculator for DCDC_V1.html` - Original calculator file (backup)
-- `image.png` - Circuit diagram showing resistor configuration
-- `README.md` - This documentation file
+- `index.html` — The full calculator app (HTML/CSS/JS in one file)
+- `capacitors.json` — Capacitor database used for ripple estimates
+- `test/calculator.test.js` — Unit tests (jsdom)
+- `check_syntax.js` — Script to verify embedded JS syntax
+
+---
+
+## 🚀 Run Locally
+
+No build tools required. Just open `index.html` in a browser.
+
+If you want to run the test suite:
+
+```sh
+npm test
+```
+
+---
+
+## 🔎 Notes
+
+- This is **not** a general-purpose resistor calculator (it is specific to buck converter feedback networks).
+- The ripple estimate is a simplified model; use it for quick sizing and sanity checks.
 
 ## 🔧 Installation
 
