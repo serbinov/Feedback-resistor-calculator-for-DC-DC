@@ -1,4 +1,4 @@
-# Buck Converter Feedback Resistor & Output Ripple Calculator
+# Calculator for step‑down DCDC converter
 
 A lightweight, **mobile-friendly web calculator** for designing the feedback voltage divider and estimating output ripple for **step‑down (buck) DC/DC converters**.
 
